@@ -3,10 +3,29 @@ import Composer from "@/components/chat/Composer";
 import { useChat } from "@/hooks/useChat";
 import { useState } from "react";
 import CharacterPanel from "@/components/character/CharacterPanel";
+import { useCharacter } from "@/hooks/useCharacter";
 
 export default function ChatPage() {
   const { messages, isStreaming, send, stop, canAbort } = useChat();
   const [showChar, setShowChar] = useState(false);
+
+  const { character, loading: charLoading, error: charError } = useCharacter();
+
+  const hpText = charError
+    ? "Err"
+    : character
+    ? `${character.core.hp.current}/${character.core.hp.max}`
+    : charLoading
+    ? "…"
+    : "—";
+
+  const acText = charError
+    ? "Err"
+    : character
+    ? String(character.core.ac)
+    : charLoading
+    ? "…"
+    : "—";
 
   return (
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">
@@ -17,8 +36,8 @@ export default function ChatPage() {
           <div className="text-xs text-white/70">Chat MVP · Step 1</div>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <MiniStat label="HP" value="9/9" />
-          <MiniStat label="AC" value="14" />
+          <MiniStat label="HP" value={hpText} />
+          <MiniStat label="AC" value={acText} />
           <button
             onClick={() => setShowChar(true)}
             className="rounded-md bg-slate-800/70 px-3 py-1 text-sm hover:bg-slate-700"
