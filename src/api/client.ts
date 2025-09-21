@@ -26,6 +26,12 @@ type FetchOpts = {
   signal?: AbortSignal;
 };
 
+let getAccessToken: () => string | null = () => null;
+
+export function setAuthTokenProvider(fn: () => string | null) {
+  getAccessToken = fn;
+}
+
 export async function fetchJSON<T>(
   path: string,
   opts: FetchOpts = {}
@@ -36,6 +42,9 @@ export async function fetchJSON<T>(
       "Content-Type": "application/json",
       Accept: "application/json",
       ...(opts.headers ?? {}),
+      ...(getAccessToken()
+        ? { Authorization: `Bearer ${getAccessToken()}` }
+        : {}),
     },
     body: opts.body == null ? undefined : JSON.stringify(opts.body),
     signal: opts.signal,
@@ -64,7 +73,13 @@ export async function* streamNDJSON<T = unknown>(
 ): AsyncIterable<T> {
   const res = await fetch(join(path), {
     method: opts.method ?? "GET",
-    headers: { Accept: "application/x-ndjson", ...(opts.headers ?? {}) },
+    headers: {
+      Accept: "application/x-ndjson",
+      ...(opts.headers ?? {}),
+      ...(getAccessToken()
+        ? { Authorization: `Bearer ${getAccessToken()}` }
+        : {}),
+    },
     body: opts.body == null ? undefined : JSON.stringify(opts.body),
     signal: opts.signal,
   });
