@@ -3,13 +3,17 @@ import Composer from "@/components/chat/Composer";
 import { useChat } from "@/hooks/useChat";
 import { useState } from "react";
 import CharacterPanel from "@/components/character/CharacterPanel";
-import { useCharacter } from "@/hooks/useCharacter";
+import { useCharacterContext } from "@/contexts/CharacterProvider";
 
 export default function ChatPage() {
   const { messages, isStreaming, send, stop, canAbort } = useChat();
   const [showChar, setShowChar] = useState(false);
 
-  const { character, loading: charLoading, error: charError } = useCharacter();
+  const {
+    character,
+    loading: charLoading,
+    error: charError,
+  } = useCharacterContext();
 
   const hpText = charError
     ? "Err"
