@@ -37,9 +37,61 @@ export interface InventoryItem {
   description?: string;
 }
 
+/** ---------- Skills ---------- */
+export type SkillKey =
+  | "acrobatics"
+  | "animalHandling"
+  | "arcana"
+  | "athletics"
+  | "deception"
+  | "history"
+  | "insight"
+  | "intimidation"
+  | "investigation"
+  | "medicine"
+  | "nature"
+  | "perception"
+  | "performance"
+  | "persuasion"
+  | "religion"
+  | "sleightOfHand"
+  | "stealth"
+  | "survival";
+
+export interface SkillProficiency {
+  key: SkillKey;
+  proficient: boolean;
+  expertise?: boolean; // counts as double proficiency if true
+}
+
+/** ---------- Spells ---------- */
+export interface Spell {
+  id: string;
+  name: string;
+  level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // 0 = cantrip
+  school?: string;
+  prepared?: boolean;
+  description?: string; // short summary for now
+}
+
+export type SpellLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export interface SpellSlots {
+  max: number;
+  used: number;
+}
+export interface Spellcasting {
+  className: string; // e.g., "Arcane Trickster"
+  ability: AbilityKey; // spellcasting ability
+  slots?: Partial<Record<SpellLevel, SpellSlots>>;
+  spells: Spell[]; // include cantrips with level = 0
+}
+
+/** ---------- Aggregate ---------- */
 export interface Character {
   core: CharacterCore;
   abilities: AbilityScores;
   features: Feature[];
   inventory: InventoryItem[];
+  skills?: SkillProficiency[]; // optional, else defaults to none
+  spellcasting?: Spellcasting; // optional (non-casters)
 }

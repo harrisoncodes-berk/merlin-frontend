@@ -38,9 +38,6 @@ export default function AbilitiesGrid({
                 <div className="text-2xl font-bold">{score}</div>
                 <div className="text-sm text-white/80">{modStr}</div>
               </div>
-              <div className="mt-1 text-[11px] text-white/50">
-                mod = ⌊(score − 10) / 2⌋
-              </div>
             </div>
           );
         })}

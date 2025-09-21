@@ -4,6 +4,10 @@ import OverviewCard from "./OverviewCard";
 import AbilitiesGrid from "./AbilitiesGrid";
 import FeaturesList from "./FeaturesList";
 import InventoryTable from "./InventoryTable";
+import SkillsTable from "./SkillsTable";
+import SpellsPanel from "./SpellsPanel";
+
+type Tab = "overview" | "abilities" | "skills" | "inventory" | "spells";
 
 export default function CharacterPanel({
   open,
@@ -13,9 +17,7 @@ export default function CharacterPanel({
   onClose: () => void;
 }) {
   const { character, derived, loading, error } = useCharacter();
-  const [tab, setTab] = useState<"overview" | "abilities" | "inventory">(
-    "overview"
-  );
+  const [tab, setTab] = useState<Tab>("overview");
 
   if (!open) return null;
 
@@ -37,7 +39,7 @@ export default function CharacterPanel({
         </header>
 
         {/* Tabs */}
-        <nav className="flex gap-2 border-b border-white/10 p-2">
+        <nav className="flex flex-wrap gap-2 border-b border-white/10 p-2">
           <TabButton
             active={tab === "overview"}
             onClick={() => setTab("overview")}
@@ -49,9 +51,19 @@ export default function CharacterPanel({
             label="Abilities"
           />
           <TabButton
+            active={tab === "skills"}
+            onClick={() => setTab("skills")}
+            label="Skills"
+          />
+          <TabButton
             active={tab === "inventory"}
             onClick={() => setTab("inventory")}
             label="Inventory"
+          />
+          <TabButton
+            active={tab === "spells"}
+            onClick={() => setTab("spells")}
+            label="Spells"
           />
         </nav>
 
@@ -66,17 +78,40 @@ export default function CharacterPanel({
                   <FeaturesList features={character.features} />
                 </>
               )}
+
               {tab === "abilities" && (
                 <AbilitiesGrid
                   scores={character.abilities}
                   mods={derived.mods}
                 />
               )}
+
+              {tab === "skills" && (
+                <SkillsTable
+                  skills={derived.skills}
+                  passivePerception={derived.passivePerception}
+                  proficiency={derived.proficiency}
+                />
+              )}
+
               {tab === "inventory" && (
                 <InventoryTable
                   items={character.inventory}
                   total={derived.totalWeight}
                 />
+              )}
+
+              {tab === "spells" && character.spellcasting && (
+                <SpellsPanel
+                  spells={character.spellcasting.spells}
+                  slots={character.spellcasting.slots}
+                  castingClass={character.spellcasting.className}
+                />
+              )}
+              {tab === "spells" && !character.spellcasting && (
+                <p className="text-white/70">
+                  This character has no spellcasting.
+                </p>
               )}
             </div>
           )}

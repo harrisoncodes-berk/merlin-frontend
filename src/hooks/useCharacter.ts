@@ -6,6 +6,7 @@ import {
   proficiencyFromLevel,
   totalWeight,
 } from "@/lib/ability";
+import { computeSkills } from "@/lib/skills";
 
 export function useCharacter() {
   const [data, setData] = useState<Character | null>(null);
@@ -36,9 +37,16 @@ export function useCharacter() {
   const derived = useMemo(() => {
     if (!data) return null;
     const mods = allAbilityMods(data.abilities);
-    const prof = proficiencyFromLevel(data.core.level);
+    const proficiency = proficiencyFromLevel(data.core.level);
     const carry = totalWeight(data.inventory);
-    return { mods, proficiency: prof, totalWeight: carry };
+    const skillCalc = computeSkills(data.abilities, proficiency, data.skills);
+    return {
+      mods,
+      proficiency,
+      totalWeight: carry,
+      skills: skillCalc.list,
+      passivePerception: skillCalc.passivePerception,
+    };
   }, [data]);
 
   return { character: data, derived, loading, error } as const;

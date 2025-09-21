@@ -17,13 +17,12 @@ let MOCK: Character = {
     {
       id: "feat_sneak_attack",
       name: "Sneak Attack",
-      summary:
-        "Once per turn, deal +1d6 damage if you have advantage or an ally adjacent to the target.",
+      summary: "+1d6 once/turn on qualifying attacks.",
     },
     {
       id: "feat_cunning_action",
       name: "Cunning Action",
-      summary: "On your turn, Dash, Disengage, or Hide as a bonus action.",
+      summary: "Dash, Disengage, or Hide as a bonus action.",
     },
   ],
   inventory: [
@@ -32,30 +31,52 @@ let MOCK: Character = {
       name: "Dagger",
       qty: 1,
       weight: 1,
-      description: "Simple melee, finesse, light, thrown (20/60).",
+      description: "Finesse, light, thrown (20/60).",
     },
     {
       id: "inv_thieves",
       name: "Thieves' Tools",
       qty: 1,
       weight: 1,
-      description: "Picks, files, and small mirrors for locks and traps.",
+      description: "For locks & traps.",
     },
-    {
-      id: "inv_rope",
-      name: "Silk Rope (50 ft)",
-      qty: 1,
-      weight: 5,
-      description: "Knotted lengths for climbing and tying.",
-    },
-    {
-      id: "inv_rations",
-      name: "Rations (1 day)",
-      qty: 3,
-      weight: 2,
-      description: "Dried meats, hardtack, and nuts.",
-    },
+    { id: "inv_rope", name: "Silk Rope (50 ft)", qty: 1, weight: 5 },
+    { id: "inv_rations", name: "Rations (1 day)", qty: 3, weight: 2 },
   ],
+  skills: [
+    { key: "acrobatics", proficient: true },
+    { key: "sleightOfHand", proficient: true, expertise: true },
+    { key: "stealth", proficient: true, expertise: true },
+    { key: "perception", proficient: true },
+    { key: "investigation", proficient: true },
+  ],
+  // Example for an Arcane Trickster at L3; at L1 this could be empty.
+  spellcasting: {
+    className: "Arcane Trickster",
+    ability: "int",
+    slots: { 1: { max: 2, used: 0 } },
+    spells: [
+      {
+        id: "sp_mage_hand",
+        name: "Mage Hand",
+        level: 0,
+        description: "Create a spectral hand to manipulate objects.",
+      },
+      {
+        id: "sp_minor_illusion",
+        name: "Minor Illusion",
+        level: 0,
+        description: "Sound or image that fits within a 5-foot cube.",
+      },
+      {
+        id: "sp_disguise_self",
+        name: "Disguise Self",
+        level: 1,
+        prepared: true,
+        description: "Change your appearance for 1 hour.",
+      },
+    ],
+  },
 };
 
 export async function getCharacter(): Promise<Character> {
