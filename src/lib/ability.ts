@@ -30,5 +30,5 @@ export function proficiencyFromLevel(level: number): number {
 }
 
 export function totalWeight(items: InventoryItem[]): number {
-  return items.reduce((sum, it) => sum + it.weight * it.qty, 0);
+  return items.reduce((sum, it) => sum + it.weight * it.quantity, 0);
 }

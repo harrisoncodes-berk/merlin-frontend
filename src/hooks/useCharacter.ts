@@ -1,53 +1,44 @@
-import { useEffect, useMemo, useState } from "react";
-import type { Character } from "@/models/character";
-import { getCharacter } from "@/api/characterApi";
+import { useMemo } from "react";
+import { useCharacterContext } from "@/contexts/CharacterProvider";
 import {
   allAbilityMods,
   proficiencyFromLevel,
   totalWeight,
 } from "@/lib/ability";
 import { computeSkills } from "@/lib/skills";
+import type { CharacterDerived } from "@/models/character";
 
 export function useCharacter() {
-  const [data, setData] = useState<Character | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { character, isLoading, error, selectCharacter } =
+    useCharacterContext();
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    getCharacter()
-      .then((c) => {
-        if (!cancelled) {
-          setData(c);
-          setError(null);
-        }
-      })
-      .catch((e) => {
-        if (!cancelled) setError(e?.message ?? "Failed to load character");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const derived = useMemo<CharacterDerived | null>(() => {
+    if (!character) return null;
 
-  const derived = useMemo(() => {
-    if (!data) return null;
-    const mods = allAbilityMods(data.abilities);
-    const proficiency = proficiencyFromLevel(data.core.level);
-    const carry = totalWeight(data.inventory);
-    const skillCalc = computeSkills(data.abilities, proficiency, data.skills);
-    return {
-      mods,
+    const abilityMods = allAbilityMods(character.abilities);
+    const proficiency = proficiencyFromLevel(character.level); // ← flat field now
+    const carryWeight = totalWeight(character.inventory);
+    const skillCalc = computeSkills(
+      character.abilities,
       proficiency,
-      totalWeight: carry,
+      character.skills
+    );
+
+    return {
+      abilityMods,
+      proficiency,
+      carryWeight,
       skills: skillCalc.list,
       passivePerception: skillCalc.passivePerception,
     };
-  }, [data]);
+  }, [character]);
 
-  return { character: data, derived, loading, error } as const;
+  return {
+    character,
+    derived,
+    loading: isLoading,
+    error,
+    // optional helper if callers want to change characters
+    selectCharacter,
+  } as const;
 }

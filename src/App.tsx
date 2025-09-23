@@ -1,26 +1,23 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "@/routes/ProtectedRoute";
+import ProtectedAppLayout from "@/routes/ProtectedAppLayout";
 import LoginPage from "@/pages/LoginPage";
 import ChatPage from "@/pages/ChatPage";
-import { CharacterProvider } from "@/contexts/CharacterProvider";
+import CharacterSelectPage from "@/pages/CharacterSelectPage";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      {/* Protected area */}
+
       <Route element={<ProtectedRoute />}>
-        <Route
-          path="/"
-          element={
-            <CharacterProvider>
-              <ChatPage />
-            </CharacterProvider>
-          }
-        />
+        <Route element={<ProtectedAppLayout />}>
+          <Route index element={<ChatPage />} />
+          <Route path="characters" element={<CharacterSelectPage />} />
+        </Route>
       </Route>
-      {/* Fallback */}
-      <Route path="*" element={<LoginPage />} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

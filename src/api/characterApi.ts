@@ -1,86 +1,90 @@
 import type { Character } from "@/models/character";
 
-let MOCK: Character = {
-  core: {
-    id: "pc1",
-    name: "Ryn",
-    race: "Lightfoot Halfling",
+const STORAGE_KEY = "merlin.activeCharacterId";
+
+const DUMMY_CHARACTERS: Character[] = [
+  {
+    character_id: "c-rogue-001",
+    name: "Nyx Emberfoot",
+    race: "Halfling",
     className: "Rogue",
     background: "Urchin",
-    level: 1,
-    hp: { current: 9, max: 9 },
-    ac: 14,
+    level: 3,
+    hpCurrent: 18,
+    hpMax: 22,
+    ac: 15,
     speed: 25,
-  },
-  abilities: { str: 8, dex: 17, con: 12, int: 12, wis: 13, cha: 10 },
-  features: [
-    {
-      id: "feat_sneak_attack",
-      name: "Sneak Attack",
-      summary: "+1d6 once/turn on qualifying attacks.",
-    },
-    {
-      id: "feat_cunning_action",
-      name: "Cunning Action",
-      summary: "Dash, Disengage, or Hide as a bonus action.",
-    },
-  ],
-  inventory: [
-    {
-      id: "inv_dagger",
-      name: "Dagger",
-      qty: 1,
-      weight: 1,
-      description: "Finesse, light, thrown (20/60).",
-    },
-    {
-      id: "inv_thieves",
-      name: "Thieves' Tools",
-      qty: 1,
-      weight: 1,
-      description: "For locks & traps.",
-    },
-    { id: "inv_rope", name: "Silk Rope (50 ft)", qty: 1, weight: 5 },
-    { id: "inv_rations", name: "Rations (1 day)", qty: 3, weight: 2 },
-  ],
-  skills: [
-    { key: "acrobatics", proficient: true },
-    { key: "sleightOfHand", proficient: true, expertise: true },
-    { key: "stealth", proficient: true, expertise: true },
-    { key: "perception", proficient: true },
-    { key: "investigation", proficient: true },
-  ],
-  // Example for an Arcane Trickster at L3; at L1 this could be empty.
-  spellcasting: {
-    className: "Arcane Trickster",
-    ability: "int",
-    slots: { 1: { max: 2, used: 0 } },
-    spells: [
+    abilities: { str: 8, dex: 18, con: 12, int: 12, wis: 10, cha: 14 },
+    skills: [{ key: "stealth", proficient: true, expertise: true }],
+    features: [
       {
-        id: "sp_mage_hand",
-        name: "Mage Hand",
-        level: 0,
-        description: "Create a spectral hand to manipulate objects.",
-      },
-      {
-        id: "sp_minor_illusion",
-        name: "Minor Illusion",
-        level: 0,
-        description: "Sound or image that fits within a 5-foot cube.",
-      },
-      {
-        id: "sp_disguise_self",
-        name: "Disguise Self",
-        level: 1,
-        prepared: true,
-        description: "Change your appearance for 1 hour.",
+        id: "feat-sneak",
+        name: "Sneak Attack",
+        summary: "Extra damage with advantage.",
       },
     ],
+    inventory: [
+      {
+        id: "inv-thieves-tools",
+        name: "Thieves' Tools",
+        quantity: 1,
+        weight: 5,
+      },
+    ],
+    spellcasting: undefined,
+    portraitUrl: null,
   },
-};
+  {
+    character_id: "c-wizard-001",
+    name: "Seraphine Vale",
+    race: "High Elf",
+    className: "Wizard",
+    background: "Sage",
+    level: 3,
+    hpCurrent: 14,
+    hpMax: 18,
+    ac: 13,
+    speed: 30,
+    abilities: { str: 8, dex: 14, con: 12, int: 18, wis: 12, cha: 10 },
+    skills: [{ key: "arcana", proficient: true }],
+    features: [
+      {
+        id: "feat-ritual",
+        name: "Ritual Casting",
+        summary:
+          "Instead of using a spell slot, you add 10 minutes to the spell's listed casting time. ",
+      },
+    ],
+    inventory: [
+      {
+        id: "inv-spellbook",
+        name: "Spellbook",
+        quantity: 1,
+        weight: 1,
+      },
+    ],
+    spellcasting: undefined,
+    portraitUrl: null,
+  },
+];
 
-export async function getCharacter(): Promise<Character> {
-  // Simulate latency
-  await new Promise((r) => setTimeout(r, 150));
-  return JSON.parse(JSON.stringify(MOCK));
+export async function listCharacters(): Promise<Character[]> {
+  // mimic latency
+  await new Promise((r) => setTimeout(r, 120));
+  return DUMMY_CHARACTERS;
+}
+
+export async function getCharacterById(
+  character_id: string
+): Promise<Character | null> {
+  await new Promise((r) => setTimeout(r, 80));
+  return DUMMY_CHARACTERS.find((c) => c.character_id === character_id) ?? null;
+}
+
+export function getActiveCharacterId(): string | null {
+  return localStorage.getItem(STORAGE_KEY);
+}
+
+export function setActiveCharacterId(id: string) {
+  localStorage.setItem(STORAGE_KEY, id);
 }

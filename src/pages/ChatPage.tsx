@@ -5,6 +5,7 @@ import { useState } from "react";
 import CharacterPanel from "@/components/character/CharacterPanel";
 import { useCharacterContext } from "@/contexts/CharacterProvider";
 import LogoutButton from "@/components/auth/LogoutButton";
+import CharacterSwitcher from "@/components/character/CharacterSwitcher";
 
 export default function ChatPage() {
   const { messages, isStreaming, send, stop, canAbort } = useChat();
@@ -12,14 +13,14 @@ export default function ChatPage() {
 
   const {
     character,
-    loading: charLoading,
+    isLoading: charLoading,
     error: charError,
   } = useCharacterContext();
 
   const hpText = charError
     ? "Err"
     : character
-    ? `${character.core.hp.current}/${character.core.hp.max}`
+    ? `${character.hpCurrent}/${character.hpMax}`
     : charLoading
     ? "…"
     : "—";
@@ -27,13 +28,14 @@ export default function ChatPage() {
   const acText = charError
     ? "Err"
     : character
-    ? String(character.core.ac)
+    ? String(character.ac)
     : charLoading
     ? "…"
     : "—";
 
   return (
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">
+      <CharacterSwitcher />
       <LogoutButton />
       <header className="mx-auto flex w-full max-w-3xl items-center gap-2 border-b border-white/10 px-2 pb-3">
         <div className="h-7 w-7 rounded-lg bg-indigo-600" />

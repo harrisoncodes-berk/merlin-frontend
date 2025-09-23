@@ -1,8 +1,9 @@
 import type {
   AbilityKey,
   AbilityScores,
+  ComputedSkill,
   SkillKey,
-  SkillProficiency,
+  Skill,
 } from "@/models/character";
 import { abilityMod } from "@/lib/ability";
 
@@ -48,22 +49,12 @@ export const SKILL_LABEL: Record<SkillKey, string> = {
   survival: "Survival",
 };
 
-export type ComputedSkill = {
-  key: SkillKey;
-  label: string;
-  ability: AbilityKey;
-  scoreMod: number;
-  proficient: boolean;
-  expertise: boolean;
-  bonus: number; // total bonus = mod + prof * (1 or 2)
-};
-
 export function computeSkills(
   abilities: AbilityScores,
   profBonus: number,
-  profs: SkillProficiency[] | undefined
+  profs: Skill[] | undefined
 ): { list: ComputedSkill[]; passivePerception: number } {
-  const profMap = new Map<SkillKey, SkillProficiency>();
+  const profMap = new Map<SkillKey, Skill>();
   (profs ?? []).forEach((p) => profMap.set(p.key, p));
   const list: ComputedSkill[] = Object.keys(SKILL_TO_ABILITY).map((k) => {
     const key = k as SkillKey;

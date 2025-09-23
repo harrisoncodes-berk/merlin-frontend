@@ -1,43 +1,55 @@
 export type AbilityKey = "str" | "dex" | "con" | "int" | "wis" | "cha";
 
-export interface AbilityScores {
+export type AbilityScores = {
   str: number;
   dex: number;
   con: number;
   int: number;
   wis: number;
   cha: number;
-}
+};
 
-export interface CharacterCore {
+export type InventoryItem = {
   id: string;
   name: string;
-  race: string;
-  className: string; // e.g., "Rogue"
-  background: string;
-  level: number;
-  hp: { current: number; max: number };
-  ac: number; // armor class
-  speed: number; // feet
-}
+  quantity: number;
+  weight: number;
+  description?: string;
+};
 
-export interface Feature {
+export type Feature = {
   id: string;
   name: string;
-  summary: string;
+  summary?: string;
   uses?: number;
   maxUses?: number;
-}
+};
 
-export interface InventoryItem {
-  id: string;
+export type Skill = {
+  key: SkillKey; // e.g., "stealth"
+  proficient: boolean;
+  expertise?: boolean;
+};
+
+export type Character = {
+  character_id: string;
   name: string;
-  qty: number;
-  weight: number; // per item, in lb
-  description?: string;
-}
+  race: string;
+  className: string;
+  background: string;
+  level: number;
+  hpCurrent: number;
+  hpMax: number;
+  ac: number;
+  speed: number;
+  abilities: AbilityScores;
+  skills: Skill[];
+  features: Feature[];
+  inventory: InventoryItem[];
+  spellcasting?: Spellcasting;
+  portraitUrl?: string | null;
+};
 
-/** ---------- Skills ---------- */
 export type SkillKey =
   | "acrobatics"
   | "animalHandling"
@@ -58,27 +70,22 @@ export type SkillKey =
   | "stealth"
   | "survival";
 
-export interface SkillProficiency {
-  key: SkillKey;
-  proficient: boolean;
-  expertise?: boolean; // counts as double proficiency if true
-}
-
-/** ---------- Spells ---------- */
 export interface Spell {
   id: string;
   name: string;
   level: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; // 0 = cantrip
   school?: string;
   prepared?: boolean;
-  description?: string; // short summary for now
+  description?: string;
 }
 
 export type SpellLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
 export interface SpellSlots {
   max: number;
   used: number;
 }
+
 export interface Spellcasting {
   className: string; // e.g., "Arcane Trickster"
   ability: AbilityKey; // spellcasting ability
@@ -86,12 +93,20 @@ export interface Spellcasting {
   spells: Spell[]; // include cantrips with level = 0
 }
 
-/** ---------- Aggregate ---------- */
-export interface Character {
-  core: CharacterCore;
-  abilities: AbilityScores;
-  features: Feature[];
-  inventory: InventoryItem[];
-  skills?: SkillProficiency[]; // optional, else defaults to none
-  spellcasting?: Spellcasting; // optional (non-casters)
+export type ComputedSkill = {
+  key: SkillKey;
+  label: string;
+  ability: AbilityKey;
+  scoreMod: number;
+  proficient: boolean;
+  expertise: boolean;
+  bonus: number; // total bonus = mod + prof * (1 or 2)
+};
+
+export interface CharacterDerived {
+  abilityMods: AbilityScores;
+  proficiency: number;
+  carryWeight: number;
+  skills: ComputedSkill[];
+  passivePerception: number;
 }

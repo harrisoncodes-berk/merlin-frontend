@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCharacterContext } from "@/contexts/CharacterProvider";
+import { useCharacter } from "@/hooks/useCharacter";
 import OverviewCard from "./OverviewCard";
 import AbilitiesGrid from "./AbilitiesGrid";
 import FeaturesList from "./FeaturesList";
@@ -16,7 +16,7 @@ export default function CharacterPanel({
   open: boolean;
   onClose: () => void;
 }) {
-  const { character, derived, loading, error } = useCharacterContext();
+  const { character, derived, loading, error } = useCharacter();
   const [tab, setTab] = useState<Tab>("overview");
 
   if (!open) return null;
@@ -77,7 +77,7 @@ export default function CharacterPanel({
               {tab === "abilities" && (
                 <AbilitiesGrid
                   scores={character.abilities}
-                  mods={derived.mods}
+                  mods={derived.abilityMods}
                 />
               )}
               {tab === "skills" && (
@@ -90,7 +90,7 @@ export default function CharacterPanel({
               {tab === "inventory" && (
                 <InventoryTable
                   items={character.inventory}
-                  total={derived.totalWeight}
+                  total={derived.carryWeight}
                 />
               )}
               {tab === "spells" &&

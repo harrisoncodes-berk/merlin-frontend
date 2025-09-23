@@ -27,9 +27,9 @@ export default function InventoryTable({
             {items.map((it) => (
               <tr key={it.id} className="bg-slate-900/60">
                 <Td>{it.name}</Td>
-                <Td>{it.qty}</Td>
+                <Td>{it.quantity}</Td>
                 <Td>{it.weight}</Td>
-                <Td>{(it.weight * it.qty).toFixed(1)}</Td>
+                <Td>{(it.weight * it.quantity).toFixed(1)}</Td>
                 <Td className="text-white/80">{it.description ?? "—"}</Td>
               </tr>
             ))}
