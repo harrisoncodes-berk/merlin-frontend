@@ -8,7 +8,6 @@ import LogoutButton from "@/components/auth/LogoutButton";
 import CharacterSwitcher from "@/components/character/CharacterSwitcher";
 
 export default function ChatPage() {
-  const { messages, isStreaming, send, stop, canAbort } = useChat();
   const [showChar, setShowChar] = useState(false);
 
   const {
@@ -16,6 +15,11 @@ export default function ChatPage() {
     isLoading: charLoading,
     error: charError,
   } = useCharacterContext();
+
+  const scopeKey = character?.character_id ?? "no-character";
+  const { messages, isStreaming, send, stop, canAbort } = useChat(scopeKey, {
+    resetOnScopeChange: true,
+  });
 
   const hpText = charError
     ? "Err"
@@ -60,7 +64,7 @@ export default function ChatPage() {
       </main>
 
       <footer className="mx-auto w-full max-w-3xl">
-        <Composer onSend={send} canAbort={canAbort} onStop={stop} />
+        <Composer key={scopeKey} onSend={send} canAbort={canAbort} onStop={stop} />
       </footer>
 
       <CharacterPanel open={showChar} onClose={() => setShowChar(false)} />
