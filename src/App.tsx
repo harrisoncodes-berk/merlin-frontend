@@ -4,6 +4,7 @@ import ProtectedAppLayout from "@/routes/ProtectedAppLayout";
 import LoginPage from "@/pages/LoginPage";
 import ChatPage from "@/pages/ChatPage";
 import CharacterSelectPage from "@/pages/CharacterSelectPage";
+import CharacterCreatorPage from "@/pages/CharacterCreatorPage";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route element={<ProtectedAppLayout />}>
           <Route index element={<ChatPage />} />
           <Route path="characters" element={<CharacterSelectPage />} />
+          <Route path="create" element={<CharacterCreatorPage />} />
         </Route>
       </Route>
 

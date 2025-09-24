@@ -1,4 +1,3 @@
-// src/contexts/CharacterProvider.tsx
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Character } from "@/models/character";
 import { listCharacters, getCharacterById } from "@/api/characterApi";
@@ -22,13 +21,11 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load when auth resolves and user changes
   useEffect(() => {
     let mounted = true;
 
     if (authLoading) return;
 
-    // Signed out: clear
     if (!user) {
       setCharacters([]);
       setCharacter(null);
@@ -52,8 +49,6 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         }
 
         const initialId = all[0].character_id;
-        // If list is full objects you can just setCharacters + setCharacter(all[0]).
-        // If you want to ensure fresh detail, fetch by id:
         const active = await getCharacterById(initialId);
         if (!mounted) return;
         setCharacter(active ?? all[0]);
