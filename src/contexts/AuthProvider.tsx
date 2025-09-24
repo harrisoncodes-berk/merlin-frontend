@@ -1,4 +1,12 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { setAuthTokenProvider } from "@/api/client";
@@ -8,6 +16,7 @@ type AuthContextValue = {
   session: Session | null;
   accessToken: string | null;
   isLoading: boolean;
+  isAuthReady: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -20,17 +29,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
+
+    (async () => {
+      const { data } = await supabase.auth.getSession();
       if (!mounted) return;
       setSession(data.session ?? null);
       setIsLoading(false);
-    });
+    })();
+
     const { data: sub } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         setSession(newSession ?? null);
         setIsLoading(false);
       }
     );
+
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
@@ -40,9 +53,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const accessToken = session?.access_token ?? null;
   const user = session?.user ?? null;
 
-  useEffect(() => {
-    setAuthTokenProvider(() => accessToken);
-  }, [accessToken]);
+  const tokenRef = useRef<string | null>(null);
+  tokenRef.current = accessToken;
+
+  useLayoutEffect(() => {
+    setAuthTokenProvider(() => tokenRef.current);
+  }, []);
+
+  const isAuthReady = !!accessToken && !isLoading;
 
   async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({ provider: "google" });
@@ -57,10 +75,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session,
       accessToken,
       isLoading,
+      isAuthReady,
       signInWithGoogle,
       signOut,
     }),
-    [user, session, accessToken, isLoading]
+    [user, session, accessToken, isLoading, isAuthReady]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

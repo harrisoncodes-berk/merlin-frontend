@@ -1,7 +1,6 @@
 import type { Character } from "@/models/character";
 import { fetchJSON } from "@/api/client";
 
-const STORAGE_KEY = "merlin.activeCharacterId";
 
 // Be tolerant of either snake_case or camelCase from the server
 type ServerCharacter = Partial<
@@ -41,7 +40,10 @@ function normalize(sc: ServerCharacter): Character {
 }
 
 export async function listCharacters(): Promise<Character[]> {
-  const data = await fetchJSON<ServerCharacter[]>("/characters");
+  const data = await fetchJSON<ServerCharacter[]>("/characters", {
+    requireAuth: true,
+    retry401Once: true,
+  });
   return data.map(normalize);
 }
 
@@ -50,7 +52,8 @@ export async function getCharacterById(
 ): Promise<Character | null> {
   try {
     const data = await fetchJSON<ServerCharacter>(
-      `/characters/${character_id}`
+      `/characters/${character_id}`,
+      { requireAuth: true, retry401Once: true }
     );
     return normalize(data);
   } catch (err: any) {

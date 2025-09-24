@@ -24,18 +24,24 @@ type FetchOpts = {
   body?: unknown;
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  requireAuth?: boolean;
+  retry401Once?: boolean;
 };
 
 let getAccessToken: () => string | null = () => null;
-
 export function setAuthTokenProvider(fn: () => string | null) {
   getAccessToken = fn;
 }
 
-export async function fetchJSON<T>(
-  path: string,
-  opts: FetchOpts = {}
-): Promise<T> {
+async function waitForToken(timeoutMs = 2000) {
+  const start = Date.now();
+  while (!getAccessToken()) {
+    if (Date.now() - start > timeoutMs) break;
+    await new Promise((r) => setTimeout(r, 40));
+  }
+}
+
+async function doFetch(path: string, opts: FetchOpts): Promise<Response> {
   const res = await fetch(join(path), {
     method: opts.method ?? (opts.body ? "POST" : "GET"),
     headers: {
@@ -49,6 +55,23 @@ export async function fetchJSON<T>(
     body: opts.body == null ? undefined : JSON.stringify(opts.body),
     signal: opts.signal,
   });
+  return res;
+}
+
+export async function fetchJSON<T>(
+  path: string,
+  opts: FetchOpts = {}
+): Promise<T> {
+  if (opts.requireAuth && !getAccessToken()) {
+    await waitForToken();
+  }
+
+  let res = await doFetch(path, opts);
+
+  if (res.status === 401 && opts.retry401Once) {
+    await waitForToken(600);
+    res = await doFetch(path, opts);
+  }
 
   let data: unknown = null;
   const text = await res.text();
@@ -56,7 +79,6 @@ export async function fetchJSON<T>(
     try {
       data = JSON.parse(text);
     } catch {
-      // fall through; non-JSON error pages etc.
       data = text;
     }
   }
@@ -66,11 +88,14 @@ export async function fetchJSON<T>(
   return data as T;
 }
 
-/** Stream newline-delimited JSON (NDJSON) from an endpoint. */
 export async function* streamNDJSON<T = unknown>(
   path: string,
   opts: Omit<FetchOpts, "headers"> & { headers?: Record<string, string> } = {}
 ): AsyncIterable<T> {
+  if (opts.requireAuth && !getAccessToken()) {
+    await waitForToken();
+  }
+
   const res = await fetch(join(path), {
     method: opts.method ?? "GET",
     headers: {
@@ -83,21 +108,43 @@ export async function* streamNDJSON<T = unknown>(
     body: opts.body == null ? undefined : JSON.stringify(opts.body),
     signal: opts.signal,
   });
-  if (!res.ok) {
-    const msg = `Stream failed: ${res.status}`;
-    throw new ApiError(msg, res.status);
+
+  if (res.status === 401 && (opts as FetchOpts).retry401Once) {
+    await waitForToken(600);
+    const retry = await fetch(join(path), {
+      method: opts.method ?? "GET",
+      headers: {
+        Accept: "application/x-ndjson",
+        ...(opts.headers ?? {}),
+        ...(getAccessToken()
+          ? { Authorization: `Bearer ${getAccessToken()}` }
+          : {}),
+      },
+      body: opts.body == null ? undefined : JSON.stringify(opts.body),
+      signal: opts.signal,
+    });
+    if (!retry.ok)
+      throw new ApiError(`Stream failed: ${retry.status}`, retry.status);
+    yield* readNDJSON<T>(retry);
+    return;
   }
+
+  if (!res.ok) {
+    throw new ApiError(`Stream failed: ${res.status}`, res.status);
+  }
+  yield* readNDJSON<T>(res);
+}
+
+// helper to read NDJSON
+async function* readNDJSON<T>(res: Response): AsyncIterable<T> {
   const reader = res.body?.getReader();
   if (!reader) return;
-
   const decoder = new TextDecoder();
   let buffer = "";
-
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     buffer += decoder.decode(value, { stream: true });
-
     let idx: number;
     while ((idx = buffer.indexOf("\n")) >= 0) {
       const line = buffer.slice(0, idx).trim();
@@ -105,18 +152,13 @@ export async function* streamNDJSON<T = unknown>(
       if (!line) continue;
       try {
         yield JSON.parse(line) as T;
-      } catch {
-        // ignore bad lines; consider logging
-      }
+      } catch {}
     }
   }
-  // last line without newline
   const tail = buffer.trim();
   if (tail) {
     try {
       yield JSON.parse(tail) as T;
-    } catch {
-      /* ignore */
-    }
+    } catch {}
   }
 }
