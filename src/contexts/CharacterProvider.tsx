@@ -1,31 +1,42 @@
+// src/contexts/CharacterProvider.tsx
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Character } from "@/models/character";
-import {
-  listCharacters,
-  getCharacterById,
-  getActiveCharacterId,
-  setActiveCharacterId,
-} from "@/api/characterApi";
+import { listCharacters, getCharacterById } from "@/api/characterApi";
+import { useAuth } from "@/contexts/AuthProvider";
 
 type CharacterContextValue = {
-  character: Character | null; // current active
-  characters: Character[]; // all available (dummy for now)
+  character: Character | null;
+  characters: Character[];
   isLoading: boolean;
-  selectCharacter: (id: string) => Promise<void>;
   error: string | null;
+  selectCharacter: (id: string) => Promise<void>;
 };
 
 const CharacterContext = createContext<CharacterContextValue | null>(null);
 
 export function CharacterProvider({ children }: { children: React.ReactNode }) {
+  const { user, isLoading: authLoading } = useAuth();
+
   const [characters, setCharacters] = useState<Character[]>([]);
   const [character, setCharacter] = useState<Character | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // on mount: load list + pick active (from localStorage or first)
+  // Load when auth resolves and user changes
   useEffect(() => {
     let mounted = true;
+
+    if (authLoading) return;
+
+    // Signed out: clear
+    if (!user) {
+      setCharacters([]);
+      setCharacter(null);
+      setIsLoading(false);
+      setError(null);
+      return;
+    }
+
     (async () => {
       setIsLoading(true);
       setError(null);
@@ -34,19 +45,18 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         if (!mounted) return;
         setCharacters(all);
 
-        const savedId = getActiveCharacterId() ?? all[0]?.character_id ?? null;
-        if (savedId) {
-          const active = await getCharacterById(savedId);
-          if (!mounted) return;
-          if (active) {
-            setCharacter(active);
-            setActiveCharacterId(savedId);
-          } else {
-            setError("Saved character not found.");
-          }
-        } else {
+        if (!all.length) {
+          setCharacter(null);
           setError("No characters available.");
+          return;
         }
+
+        const initialId = all[0].character_id;
+        // If list is full objects you can just setCharacters + setCharacter(all[0]).
+        // If you want to ensure fresh detail, fetch by id:
+        const active = await getCharacterById(initialId);
+        if (!mounted) return;
+        setCharacter(active ?? all[0]);
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message ?? "Failed to load characters.");
@@ -54,22 +64,26 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
         if (mounted) setIsLoading(false);
       }
     })();
+
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [user?.id, authLoading]);
 
-  async function selectCharacter(character_id: string) {
+  async function selectCharacter(id: string) {
+    if (!user?.id) return;
     setIsLoading(true);
-    const active = await getCharacterById(character_id);
-    setCharacter(active);
-    setActiveCharacterId(character_id);
-    setIsLoading(false);
+    try {
+      const active = await getCharacterById(id);
+      setCharacter(active);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const value = useMemo<CharacterContextValue>(
-    () => ({ character, characters, isLoading, selectCharacter, error }),
-    [character, characters, isLoading, selectCharacter, error]
+  const value = useMemo(
+    () => ({ character, characters, isLoading, error, selectCharacter }),
+    [character, characters, isLoading, error]
   );
 
   return (

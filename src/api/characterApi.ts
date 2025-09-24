@@ -1,90 +1,61 @@
 import type { Character } from "@/models/character";
+import { fetchJSON } from "@/api/client";
 
 const STORAGE_KEY = "merlin.activeCharacterId";
 
-const DUMMY_CHARACTERS: Character[] = [
-  {
-    character_id: "c-rogue-001",
-    name: "Nyx Emberfoot",
-    race: "Halfling",
-    className: "Rogue",
-    background: "Urchin",
-    level: 3,
-    hpCurrent: 18,
-    hpMax: 22,
-    ac: 15,
-    speed: 25,
-    abilities: { str: 8, dex: 18, con: 12, int: 12, wis: 10, cha: 14 },
-    skills: [{ key: "stealth", proficient: true, expertise: true }],
-    features: [
-      {
-        id: "feat-sneak",
-        name: "Sneak Attack",
-        summary: "Extra damage with advantage.",
-      },
-    ],
-    inventory: [
-      {
-        id: "inv-thieves-tools",
-        name: "Thieves' Tools",
-        quantity: 1,
-        weight: 5,
-      },
-    ],
-    spellcasting: undefined,
-    portraitUrl: null,
-  },
-  {
-    character_id: "c-wizard-001",
-    name: "Seraphine Vale",
-    race: "High Elf",
-    className: "Wizard",
-    background: "Sage",
-    level: 3,
-    hpCurrent: 14,
-    hpMax: 18,
-    ac: 13,
-    speed: 30,
-    abilities: { str: 8, dex: 14, con: 12, int: 18, wis: 12, cha: 10 },
-    skills: [{ key: "arcana", proficient: true }],
-    features: [
-      {
-        id: "feat-ritual",
-        name: "Ritual Casting",
-        summary:
-          "Instead of using a spell slot, you add 10 minutes to the spell's listed casting time. ",
-      },
-    ],
-    inventory: [
-      {
-        id: "inv-spellbook",
-        name: "Spellbook",
-        quantity: 1,
-        weight: 1,
-      },
-    ],
-    spellcasting: undefined,
-    portraitUrl: null,
-  },
-];
+// Be tolerant of either snake_case or camelCase from the server
+type ServerCharacter = Partial<
+  Character & {
+    id?: string; // fallback if server still returns `id`
+    character_id: string; // primary id from backend
+    class_name?: string;
+    hp_current?: number;
+    hp_max?: number;
+    portrait_url?: string | null;
+  }
+>;
+
+function normalize(sc: ServerCharacter): Character {
+  if (!sc) throw new Error("Empty character payload");
+
+  // Prefer server's character_id; fall back to id if needed
+  const character_id = sc.character_id ?? sc.id!;
+  return {
+    character_id,
+    name: sc.name!,
+    race: sc.race!,
+    className: sc.className ?? sc.class_name!,
+    background: sc.background!,
+    level: sc.level!,
+    hpCurrent: sc.hpCurrent ?? sc.hp_current!,
+    hpMax: sc.hpMax ?? sc.hp_max!,
+    ac: sc.ac!,
+    speed: sc.speed!,
+    abilities: sc.abilities!,
+    skills: sc.skills ?? [],
+    features: sc.features ?? [],
+    inventory: sc.inventory ?? [],
+    spellcasting: sc.spellcasting ?? undefined,
+    portraitUrl: sc.portraitUrl ?? sc.portrait_url ?? null,
+  };
+}
 
 export async function listCharacters(): Promise<Character[]> {
-  // mimic latency
-  await new Promise((r) => setTimeout(r, 120));
-  return DUMMY_CHARACTERS;
+  const data = await fetchJSON<ServerCharacter[]>("/characters");
+  return data.map(normalize);
 }
 
 export async function getCharacterById(
   character_id: string
 ): Promise<Character | null> {
-  await new Promise((r) => setTimeout(r, 80));
-  return DUMMY_CHARACTERS.find((c) => c.character_id === character_id) ?? null;
+  try {
+    const data = await fetchJSON<ServerCharacter>(
+      `/characters/${character_id}`
+    );
+    return normalize(data);
+  } catch (err: any) {
+    if (err?.status === 404) return null;
+    throw err;
+  }
 }
 
-export function getActiveCharacterId(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
-}
-
-export function setActiveCharacterId(id: string) {
-  localStorage.setItem(STORAGE_KEY, id);
-}
