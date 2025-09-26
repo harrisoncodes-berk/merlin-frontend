@@ -48,7 +48,7 @@ export function CharacterProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        const initialId = all[0].character_id;
+        const initialId = all[0].id;
         const active = await getCharacterById(initialId);
         if (!mounted) return;
         setCharacter(active ?? all[0]);

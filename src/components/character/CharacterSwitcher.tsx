@@ -66,13 +66,13 @@ export default function CharacterSwitcher() {
           >
             {characters.map((c) => (
               <button
-                key={c.character_id}
+                key={c.id}
                 onClick={async () => {
-                  await selectCharacter(c.character_id);
+                  await selectCharacter(c.id);
                   setOpen(false);
                 }}
                 className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm hover:bg-slate-800 ${
-                  c.character_id === character.character_id
+                  c.id === character.id
                     ? "bg-slate-800/80"
                     : ""
                 }`}
@@ -84,7 +84,7 @@ export default function CharacterSwitcher() {
                     {c.race} • {c.className} {c.level}
                   </div>
                 </div>
-                {c.character_id === character.character_id && (
+                {c.id === character.id && (
                   <span className="text-xs text-emerald-400">Active</span>
                 )}
               </button>

@@ -32,7 +32,7 @@ export type Skill = {
 };
 
 export type Character = {
-  character_id: string;
+  id: string;
   name: string;
   race: string;
   className: string;

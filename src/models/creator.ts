@@ -59,7 +59,7 @@ export type CharacterDraft = {
 
 /** Minimal character shape you can send to your existing Character model later */
 export type CreatedCharacter = {
-  character_id: string;
+  id: string;
   name: string;
   race: string;
   className: string;

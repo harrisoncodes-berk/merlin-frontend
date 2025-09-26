@@ -5,6 +5,7 @@ import LoginPage from "@/pages/LoginPage";
 import ChatPage from "@/pages/ChatPage";
 import CharacterSelectPage from "@/pages/CharacterSelectPage";
 import CharacterCreatorPage from "@/pages/CharacterCreatorPage";
+import CharacterCreatorPageTwo from "@/pages/CharacterCreatorPageTwo";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route index element={<ChatPage />} />
           <Route path="characters" element={<CharacterSelectPage />} />
           <Route path="create" element={<CharacterCreatorPage />} />
+          <Route path="create/2" element={<CharacterCreatorPageTwo />} />
         </Route>
       </Route>
 

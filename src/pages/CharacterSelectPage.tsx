@@ -64,13 +64,13 @@ export default function CharacterSelectPage() {
 
           {characters.map((c) => (
             <button
-              key={c.character_id}
+              key={c.id}
               onClick={async () => {
-                await selectCharacter(c.character_id);
+                await selectCharacter(c.id);
                 navigate("/");
               }}
               className={`rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-left shadow hover:border-slate-700 hover:bg-slate-900 ${
-                character?.character_id === c.character_id
+                character?.id === c.id
                   ? "ring-2 ring-emerald-500/60"
                   : ""
               }`}

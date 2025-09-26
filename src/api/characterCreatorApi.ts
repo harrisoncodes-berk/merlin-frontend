@@ -339,7 +339,7 @@ export async function createCharacterFromDraft(
   }
 
   return {
-    character_id: `char_${Math.random().toString(36).slice(2, 10)}`,
+    id: `char_${Math.random().toString(36).slice(2, 10)}`,
     name: draft.name,
     race: race.name,
     className: klass.name,

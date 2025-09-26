@@ -18,9 +18,9 @@ function normalize(sc: ServerCharacter): Character {
   if (!sc) throw new Error("Empty character payload");
 
   // Prefer server's character_id; fall back to id if needed
-  const character_id = sc.character_id ?? sc.id!;
+  const id = sc.id ?? sc.character_id!;
   return {
-    character_id,
+    id,
     name: sc.name!,
     race: sc.race!,
     className: sc.className ?? sc.class_name!,
@@ -48,11 +48,11 @@ export async function listCharacters(): Promise<Character[]> {
 }
 
 export async function getCharacterById(
-  character_id: string
+  id: string
 ): Promise<Character | null> {
   try {
     const data = await fetchJSON<ServerCharacter>(
-      `/characters/${character_id}`,
+      `/characters/${id}`,
       { requireAuth: true, retry401Once: true }
     );
     return normalize(data);

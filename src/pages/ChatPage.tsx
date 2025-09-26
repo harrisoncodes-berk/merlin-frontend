@@ -16,7 +16,7 @@ export default function ChatPage() {
     error: charError,
   } = useCharacterContext();
 
-  const scopeKey = character?.character_id ?? "no-character";
+  const scopeKey = character?.id ?? "no-character";
   const { messages, isStreaming, send, stop, canAbort } = useChat(scopeKey, {
     resetOnScopeChange: true,
   });
