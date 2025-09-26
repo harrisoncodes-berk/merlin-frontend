@@ -1,0 +1,9 @@
+[
+    {
+        "id": "arcane_recovery",
+        "name": "Arcane Recovery",
+        "description": "Once per day after a short rest, regain spell slots equal to half your wizard level (rounded up).",
+        "uses": 1,
+        "maxUses": 1
+    }
+]

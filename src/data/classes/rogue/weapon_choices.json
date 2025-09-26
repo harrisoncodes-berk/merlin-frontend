@@ -1,0 +1,56 @@
+[
+    {
+        "id": "rogue_melee",
+        "name": "Rogue Melee Weapon",
+        "number": 1,
+        "choices": [
+            {
+                "id": "rapier",
+                "name": "Rapier",
+                "description": "Slender, two-edged sword with a sharp, pointed tip, designed for thrusting attacks.",
+                "hit_dice": {
+                    "id": "1d8",
+                    "rolls": 1,
+                    "sides": 8
+                }
+            },
+            {
+                "id": "short_sword",
+                "name": "Short Sword",
+                "description": "Wider, two-edged sword with a sharp, pointed tip, designed for slashing attacks.",
+                "hit_dice": {
+                    "id": "1d6",
+                    "rolls": 1,
+                    "sides": 6
+                }
+            }
+        ]
+    },
+    {
+        "id": "rogue_ranged",
+        "name": "Rogue Ranged Weapon",
+        "number": 1,
+        "choices": [
+            {
+                "id": "sling",
+                "name": "Sling",
+                "description": "Simple weapon that uses a sling to throw stones or other objects.",
+                "hit_dice": {
+                    "id": "1d4",
+                    "rolls": 1,
+                    "sides": 4
+                }
+            },
+            {
+                "id": "shortbow",
+                "name": "Shortbow",
+                "description": "Shorter, wider bow with a sharp, pointed tip, designed for ranged attacks.",
+                "hit_dice": {
+                    "id": "1d6",
+                    "rolls": 1,
+                    "sides": 6
+                }
+            }
+        ]
+    }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "cantrip",
+    "name": "Cantrip",
+    "number": 3,
+    "description": "Choose 3 cantrips",
+    "choices": [
+      {
+        "id": "mage_hand",
+        "name": "Mage Hand",
+        "description": "Floating hand manipulates objects.",
+        "level": 0
+      },
+
+      {
+        "id": "light",
+        "name": "Light",
+        "description": "Create a bright light source.",
+        "level": 0
+      },
+      {
+        "id": "fire_bolt",
+        "name": "Fire Bolt",
+        "description": "Deals 2d4 fire damage.",
+        "level": 0
+      }
+    ]
+  },
+  {
+    "id": "level_1",
+    "name": "Level 1",
+    "number": 3,
+    "description": "Choose 3 level 1 spells",
+    "choices": [
+      {
+        "id": "magic_missile",
+        "name": "Magic Missile",
+        "description": "Creates three darts of force that automatically hit and deal 1d4+1 force damage each.",
+        "level": 1
+      },
+      {
+        "id": "shield",
+        "name": "Shield",
+        "description": "Reaction: Increase AC by +5 until your next turn, including against the triggering attack.",
+        "level": 1
+      },
+      {
+        "id": "burning_hands",
+        "name": "Burning Hands",
+        "description": "15-foot cone of fire, each creature takes 3d6 fire damage (Dex save for half).",
+        "level": 1
+      },
+      {
+        "id": "sleep",
+        "name": "Sleep",
+        "description": "Puts creatures to sleep in a 20-foot area until total HP affected is reached.",
+        "level": 1
+      },
+      {
+        "id": "mage_armor",
+        "name": "Mage Armor",
+        "description": "Target’s AC becomes 13 + Dexterity modifier for 8 hours if unarmored.",
+        "level": 1
+      }
+    ]
+  }
+]

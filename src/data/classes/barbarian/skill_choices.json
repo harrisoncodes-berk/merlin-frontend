@@ -1,0 +1,13 @@
+{
+    "proficiencies": 2,
+    "description": "Choose 2 skills to be proficient in",
+    "skills": [
+        "acrobatics",
+        "animalHandling",
+        "intimidation",
+        "nature",
+        "perception",
+        "performance",
+        "survival"
+    ]
+}

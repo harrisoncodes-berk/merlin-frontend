@@ -30,7 +30,6 @@ export default function CharacterCreatorPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Draft state
   const [name, setName] = useState("");
   const [raceId, setRaceId] = useState<string | null>(null);
   const [classId, setClassId] = useState<string | null>(null);
@@ -38,7 +37,6 @@ export default function CharacterCreatorPage() {
   const [weaponIds, setWeaponIds] = useState<string[]>([]);
   const [packId, setPackId] = useState<string | null>(null);
 
-  // Load base data
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -52,7 +50,6 @@ export default function CharacterCreatorPage() {
     };
   }, []);
 
-  // Refresh dependent data when class changes
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -66,7 +63,6 @@ export default function CharacterCreatorPage() {
       setWeapons(ws);
       setPacks(ps);
 
-      // Clean invalid selections on change
       if (backgroundId && !bgs.some((b) => b.background_id === backgroundId)) {
         setBackgroundId(null);
       }
@@ -80,7 +76,7 @@ export default function CharacterCreatorPage() {
     return () => {
       mounted = false;
     };
-  }, [classId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [classId]);
 
   const selectedRace = useMemo(
     () => races.find((r) => r.race_id === raceId) ?? null,
@@ -128,7 +124,7 @@ export default function CharacterCreatorPage() {
       const created = await createCharacterFromDraft(draft);
       // TODO: call your backend POST /v1/characters once wired
       console.log("Created Character (dummy)", created);
-      nav("/"); // back to chat or characters
+      nav("/");
     } catch (e: any) {
       setError(e?.message ?? "Failed to create character");
     } finally {
@@ -169,7 +165,7 @@ export default function CharacterCreatorPage() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Nyx Emberfoot"
+                placeholder="Create a name for your character"
                 className="w-full rounded-xl bg-slate-900/70 px-3 py-2 text-white placeholder:text-slate-400 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
             </label>

@@ -1,0 +1,17 @@
+[
+    {
+        "id": "lucky",
+        "name": "Lucky",
+        "description": "Reroll a natural 1 on attack, ability, or saving throws."
+    },
+    {
+        "id": "brave",
+        "name": "Brave",
+        "description": "Advantage on saving throws against being frightened."
+    },
+    {
+        "id": "nimble",
+        "name": "Nimble",
+        "description": "You can move through spaces occupied by creatures larger than you."
+    }
+]

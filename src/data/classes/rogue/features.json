@@ -1,0 +1,12 @@
+[
+    {
+        "id": "sneak_attack",
+        "name": "Sneak Attack",
+        "description": "Bonus damage (1d6 at start) when you have advantage or an ally nearby."
+    },
+    {
+        "id": "thieves_cant",
+        "name": "Thieves' Cant",
+        "description": "You can speak, read, and write in thieves' cant."
+    }
+]

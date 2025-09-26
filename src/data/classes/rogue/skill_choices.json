@@ -1,0 +1,18 @@
+{
+  "proficiencies": 4,
+  "expertise": 2,
+  "description": "Choose 4 skills to be proficicent in",
+  "skills": [
+    "acrobatics",
+    "athletics",
+    "deception",
+    "insight",
+    "intimidation",
+    "investigation",
+    "perception",
+    "performance",
+    "persuasion",
+    "sleight_of_hand",
+    "stealth"
+  ]
+}

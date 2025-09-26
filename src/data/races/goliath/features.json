@@ -1,0 +1,19 @@
+[
+    {
+        "id": "stones_endurance",
+        "name": "Stones Endurance",
+        "description": "Once per short/long rest, reduce damage taken by 1d12 + Con modifier.",
+        "uses": 1,
+        "maxUses": 1
+    },
+    {
+        "id": "powerful_build",
+        "name": "Powerful Build",
+        "description": "Count as one size larger for carrying, pushing, pulling, lifting."
+    },
+    {
+        "id": "mountain_born",
+        "name": "Mountain Born",
+        "description": "Resistant to cold damage and acclimated to high altitudes."
+    }
+]

@@ -1,0 +1,30 @@
+[
+    {
+        "id": "barbarian_melee",
+        "name": "Weapon Choice",
+        "number": 1,
+        "description": "Choose 1 weapon to be proficient in",
+        "choices": [
+            {
+                "id": "great_axe",
+                "name": "Great Axe",
+                "description": "A large axe",
+                "hit_dice": {
+                    "name": "1d12",
+                    "rolls": 1,
+                    "sides": 12
+                }
+            },
+            {
+                "id": "great_sword",
+                "name": "Great Sword",
+                "description": "A large sword",
+                "hit_dice": {
+                    "name": "1d10",
+                    "rolls": 1,
+                    "sides": 10
+                }
+            }
+        ]
+    }
+]

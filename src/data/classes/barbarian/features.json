@@ -1,0 +1,14 @@
+[
+    {
+        "id": "rage",
+        "name": "Rage",
+        "description": "Enter a battle fury for bonus damage (Strength-based), resistance to bludgeoning/piercing/slashing damage, advantage on Strength checks/saves.",
+        "uses": 1,
+        "maxUses": 1
+    },
+    {
+        "id": "unarmored_defense",
+        "name": "Unarmored Defense",
+        "description": "AC = 10 + Dex mod + Con mod if not wearing armor."
+    }
+]
