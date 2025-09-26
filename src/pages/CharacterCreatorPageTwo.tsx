@@ -10,6 +10,7 @@ import {
   listPacksForClass,
   createCharacterFromDraft,
 } from "@/api/characterCreatorApi";
+import { listRacess } from "@/api/characterCreatorApiTwo";
 import type {
   Race,
   ClassDef,
@@ -36,6 +37,8 @@ export default function CharacterCreatorPageTwo() {
   const [backgroundId, setBackgroundId] = useState<string | null>(null);
   const [weaponIds, setWeaponIds] = useState<string[]>([]);
   const [packId, setPackId] = useState<string | null>(null);
+
+  console.log('races', listRacess());
 
   useEffect(() => {
     let mounted = true;

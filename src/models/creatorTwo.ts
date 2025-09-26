@@ -58,5 +58,5 @@ export type Background = {
     description: string;
     features: Feature[];
     skills: Skill[];
-    inventory?: InventoryItem[];
+    inventory: InventoryItem[];
 }
