@@ -1,16 +1,7 @@
+import type { SpellChoice } from "@/models/creatorTwo";
+
 interface SpellChoiceComponentProps {
-  choice: {
-    id: string;
-    name: string;
-    number: number;
-    description: string;
-    choices: Array<{
-      id: string;
-      name: string;
-      description: string;
-      level: number;
-    }>;
-  };
+  choice: SpellChoice;
   selected: string[];
   onUpdate: (spells: string[]) => void;
 }
@@ -21,14 +12,17 @@ export default function SpellChoiceComponent({
   onUpdate,
 }: SpellChoiceComponentProps) {
   function toggleSpell(spellId: string) {
-    if (selected.includes(spellId)) {
-      onUpdate(selected.filter(id => id !== spellId));
+    const spell = choice.choices.find(s => s.id === spellId);
+    if (!spell) return;
+    
+    if (selected.includes(spell.name)) {
+      onUpdate(selected.filter(name => name !== spell.name));
     } else if (selected.length < choice.number) {
-      onUpdate([...selected, spellId]);
+      onUpdate([...selected, spell.name]);
     }
   }
 
-  const levelLabel = choice.name === "Cantrip" ? "Cantrip" : `Level ${choice.name}`;
+  const levelLabel = choice.name;
 
   return (
     <div className="rounded-xl bg-slate-800/50 p-3 ring-1 ring-white/10">
@@ -40,7 +34,7 @@ export default function SpellChoiceComponent({
       </div>
       <div className="grid gap-2">
         {choice.choices.map((spell) => {
-          const isSelected = selected.includes(spell.id);
+          const isSelected = selected.includes(spell.name);
           const isDisabled = !isSelected && selected.length >= choice.number;
           
           return (

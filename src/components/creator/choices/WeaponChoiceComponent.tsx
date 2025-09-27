@@ -1,20 +1,7 @@
+import type { WeaponChoice } from "@/models/creatorTwo";
+
 interface WeaponChoiceComponentProps {
-  choice: {
-    id: string;
-    name: string;
-    number: number;
-    description: string;
-    choices: Array<{
-      id: string;
-      name: string;
-      description: string;
-      hit_dice: {
-        name: string;
-        rolls: number;
-        sides: number;
-      };
-    }>;
-  };
+  choice: WeaponChoice;
   selected: string[];
   onUpdate: (weapons: string[]) => void;
 }
@@ -25,10 +12,13 @@ export default function WeaponChoiceComponent({
   onUpdate,
 }: WeaponChoiceComponentProps) {
   function toggleWeapon(weaponId: string) {
-    if (selected.includes(weaponId)) {
-      onUpdate(selected.filter(id => id !== weaponId));
+    const weapon = choice.choices.find(w => w.id === weaponId);
+    if (!weapon) return;
+    
+    if (selected.includes(weapon.name)) {
+      onUpdate(selected.filter(name => name !== weapon.name));
     } else if (selected.length < choice.number) {
-      onUpdate([...selected, weaponId]);
+      onUpdate([...selected, weapon.name]);
     }
   }
 
@@ -42,7 +32,7 @@ export default function WeaponChoiceComponent({
       </div>
       <div className="grid gap-2">
         {choice.choices.map((weapon) => {
-          const isSelected = selected.includes(weapon.id);
+          const isSelected = selected.includes(weapon.name);
           const isDisabled = !isSelected && selected.length >= choice.number;
           
           return (
@@ -63,7 +53,7 @@ export default function WeaponChoiceComponent({
                 <div className="font-medium">{weapon.name}</div>
                 <div className="text-sm text-white/70">{weapon.description}</div>
                 <div className="text-xs text-white/60">
-                  Damage: {weapon.hit_dice.name}
+                  Damage: {weapon.hitDice.name}
                 </div>
               </div>
             </label>
