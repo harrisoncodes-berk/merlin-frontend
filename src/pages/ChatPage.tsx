@@ -6,7 +6,6 @@ import CharacterPanel from "@/components/character/CharacterPanel";
 import { useCharacterContext } from "@/contexts/CharacterProvider";
 import LogoutButton from "@/components/auth/LogoutButton";
 import CharacterSwitcher from "@/components/character/CharacterSwitcher";
-import { listBackgrounds } from "@/api/characterCreatorApiTwo";
 
 export default function ChatPage() {
   const [showChar, setShowChar] = useState(false);
@@ -17,8 +16,6 @@ export default function ChatPage() {
     error: charError,
   } = useCharacterContext();
 
-  console.log('backgrounds', listBackgrounds());
-
   const scopeKey = character?.id ?? "no-character";
   const { messages, isStreaming, send, stop, canAbort } = useChat(scopeKey, {
     resetOnScopeChange: true,
@@ -27,18 +24,18 @@ export default function ChatPage() {
   const hpText = charError
     ? "Err"
     : character
-    ? `${character.hpCurrent}/${character.hpMax}`
-    : charLoading
-    ? "…"
-    : "—";
+      ? `${character.hpCurrent}/${character.hpMax}`
+      : charLoading
+        ? "…"
+        : "—";
 
   const acText = charError
     ? "Err"
     : character
-    ? String(character.ac)
-    : charLoading
-    ? "…"
-    : "—";
+      ? String(character.ac)
+      : charLoading
+        ? "…"
+        : "—";
 
   return (
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">

@@ -16,10 +16,10 @@ export type Class = {
     description: string;
     ac: number;
     hitDice: HitDice;
-    features: Feature[];
-    skillChoices: SkillChoices;
-    weaponChoices: WeaponChoice[];
-    spellChoices: SpellChoice[];
+    features?: Feature[];
+    skillChoices?: SkillChoices;
+    weaponChoices?: WeaponChoice[];
+    spellChoices?: SpellChoice[];
 }
 
 export type HitDice = {
@@ -56,7 +56,7 @@ export type Background = {
     id: string;
     name: string;
     description: string;
-    features: Feature[];
-    skills: Skill[];
-    inventory: InventoryItem[];
+    features?: Feature[];
+    skills?: Skill[];
+    inventory?: InventoryItem[];
 }
