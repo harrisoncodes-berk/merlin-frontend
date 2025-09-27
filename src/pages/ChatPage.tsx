@@ -6,7 +6,7 @@ import CharacterPanel from "@/components/character/CharacterPanel";
 import { useCharacterContext } from "@/contexts/CharacterProvider";
 import LogoutButton from "@/components/auth/LogoutButton";
 import CharacterSwitcher from "@/components/character/CharacterSwitcher";
-import { listRacess } from "@/api/characterCreatorApiTwo";
+import { listBackgrounds } from "@/api/characterCreatorApiTwo";
 
 export default function ChatPage() {
   const [showChar, setShowChar] = useState(false);
@@ -17,7 +17,7 @@ export default function ChatPage() {
     error: charError,
   } = useCharacterContext();
 
-  console.log('races', listRacess());
+  console.log('backgrounds', listBackgrounds());
 
   const scopeKey = character?.id ?? "no-character";
   const { messages, isStreaming, send, stop, canAbort } = useChat(scopeKey, {
