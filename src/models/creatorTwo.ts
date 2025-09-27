@@ -54,6 +54,7 @@ export type SpellChoice = {
 
 export type Background = {
     id: string;
+    classId: string;
     name: string;
     description: string;
     features?: Feature[];

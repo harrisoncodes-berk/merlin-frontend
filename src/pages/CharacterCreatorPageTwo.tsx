@@ -74,6 +74,10 @@ export default function CharacterCreatorPageTwo() {
   const selectedRace = races.find((r) => r.id === draft.raceId) ?? null;
   const selectedBackground = backgrounds.find((b) => b.id === draft.backgroundId) ?? null;
 
+  const filteredBackgrounds = useMemo(() => {
+    return backgrounds.filter(bg => bg.classId === draft.classId);
+  }, [backgrounds, draft.classId]);
+
   // Validation logic for choices step
   const isChoicesStepValid = useMemo(() => {
     if (!selectedClass) return false;
@@ -119,7 +123,21 @@ export default function CharacterCreatorPageTwo() {
   ];
 
   function updateDraft(updates: Partial<CharacterDraft>) {
-    setDraft((prev) => ({ ...prev, ...updates }));
+    setDraft((prev) => {
+      const newDraft = { ...prev, ...updates };
+      
+      // If class is changing, clear background selection if it doesn't match the new class
+      if (updates.classId && updates.classId !== prev.classId) {
+        if (newDraft.backgroundId) {
+          const selectedBackground = backgrounds.find(bg => bg.id === newDraft.backgroundId);
+          if (selectedBackground && selectedBackground.classId !== updates.classId) {
+            newDraft.backgroundId = null;
+          }
+        }
+      }
+      
+      return newDraft;
+    });
   }
 
   function goToStep(step: Step) {
@@ -242,7 +260,7 @@ export default function CharacterCreatorPageTwo() {
             )}
             {currentStep === "background" && (
               <BackgroundStep
-                backgrounds={backgrounds}
+                backgrounds={filteredBackgrounds}
                 selectedId={draft.backgroundId}
                 onSelect={(backgroundId) => updateDraft({ backgroundId })}
               />
