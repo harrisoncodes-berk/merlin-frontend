@@ -1,5 +1,5 @@
 import type { Class, Race, Background } from "@/models/creatorTwo";
-import type { SkillKey } from "@/models/characterCommon";
+import type { Feature, SkillKey } from "@/models/characterCommon";
 
 interface CharacterDraft {
   name: string;
@@ -110,60 +110,38 @@ export default function SummaryCard({
 
       {/* Class Features */}
       {selectedClass?.features && selectedClass.features.length > 0 && (
-        <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
-          <div className="mb-2 text-sm font-semibold text-white/90">Class Features</div>
-          <div className="space-y-2">
-            {selectedClass.features.map((feature) => (
-              <div key={feature.id} className="text-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium">{feature.name}</span>
-                </div>
-                {feature.description && (
-                  <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        FeatureList({ features: selectedClass.features, title: "Class Features" })
       )}
 
       {/* Race Features */}
       {selectedRace?.features && selectedRace.features.length > 0 && (
-        <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
-          <div className="mb-2 text-sm font-semibold text-white/90">Race Features</div>
-          <div className="space-y-2">
-            {selectedRace.features.map((feature) => (
-              <div key={feature.id} className="text-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium">{feature.name}</span>
-                </div>
-                {feature.description && (
-                  <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        FeatureList({ features: selectedRace.features, title: "Race Features" })
       )}
 
       {/* Background Features */}
       {selectedBackground?.features && selectedBackground.features.length > 0 && (
-        <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
-          <div className="mb-2 text-sm font-semibold text-white/90">Background Features</div>
-          <div className="space-y-2">
-            {selectedBackground.features.map((feature) => (
-              <div key={feature.id} className="text-sm">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-medium">{feature.name}</span>
-                </div>
-                {feature.description && (
-                  <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        FeatureList({ features: selectedBackground.features, title: "Background Features" })
       )}
     </div>
   );
+}
+
+function FeatureList({ features, title }: { features: Feature[], title: string }) {
+  return (
+      <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
+        <div className="mb-2 text-sm font-semibold text-white/90">{title}</div>
+        <div className="space-y-2">
+          {features.map((feature) => (
+            <div key={feature.id} className="text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-medium">{feature.name}</span>
+              </div>
+              {feature.description && (
+                <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+  )
 }
