@@ -1,4 +1,4 @@
-import type { AbilityKey, Feature, InventoryItem, Skill, SkillKey, Spell, Weapon } from "./character/common";
+import type { AbilityKey, Feature, InventoryItem, Skill, SkillKey, Spell, Weapon } from "@/models/character/common";
 
 export type Race = {
     id: string;
@@ -67,7 +67,7 @@ export type CharacterDraft = {
     classId: string | null;
     raceId: string | null;
     backgroundId: string | null;
-    skills: Skill[]; // TODO: Update to be Skill[]
+    skills: Skill[];
     weapons: Weapon[]; 
     spells: string[]; // TODO: Update type
     // TODO: Add inventory items

@@ -57,9 +57,9 @@ export default function CharacterCreatorPage() {
     };
   }, []);
 
-  const selectedClass = classes.find((c) => c.id === draft.classId) ?? null;
-  const selectedRace = races.find((r) => r.id === draft.raceId) ?? null;
-  const selectedBackground = backgrounds.find((b) => b.id === draft.backgroundId) ?? null;
+  const selectedClass = useMemo(() => classes.find((c) => c.id === draft.classId) ?? null, [classes, draft.classId]);
+  const selectedRace = useMemo(() => races.find((r) => r.id === draft.raceId) ?? null, [races, draft.raceId]);
+  const selectedBackground = useMemo(() => backgrounds.find((b) => b.id === draft.backgroundId) ?? null, [backgrounds, draft.backgroundId]);
 
   const filteredBackgrounds = useMemo(() => {
     return backgrounds.filter(bg => bg.classId === draft.classId);
@@ -69,8 +69,7 @@ export default function CharacterCreatorPage() {
   const isChoicesStepValid = useMemo(() => {
     if (!selectedClass) return false;
 
-    // TODO: Check if expertise is applicable
-    if (selectedClass.skillChoices && draft.skills.length !== selectedClass.skillChoices.proficiencies) {
+    if (selectedClass.skillChoices && draft.skills.length !== selectedClass.skillChoices.proficiencies && (!selectedClass.skillChoices.expertise || draft.skills.filter(s => s.expertise).length !== selectedClass.skillChoices.expertise)) {
       return false;
     }
 
@@ -113,12 +112,11 @@ export default function CharacterCreatorPage() {
 
       // If class is changing, clear background selection if it doesn't match the new class
       if (updates.classId && updates.classId !== prev.classId) {
-        if (newDraft.backgroundId) {
-          const selectedBackground = backgrounds.find(bg => bg.id === newDraft.backgroundId);
-          if (selectedBackground && selectedBackground.classId !== updates.classId) {
-            newDraft.backgroundId = null;
-          }
-        }
+        newDraft.backgroundId = null;
+      }
+
+      if (updates.backgroundId && updates.backgroundId !== prev.backgroundId) {
+        newDraft.skills = backgrounds.find(bg => bg.id === updates.backgroundId)?.skills ?? [];
       }
 
       return newDraft;
@@ -252,6 +250,7 @@ export default function CharacterCreatorPage() {
             {currentStep === "choices" && selectedClass && (
               <ClassChoicesStep
                 selectedClass={selectedClass}
+                selectedBackground={selectedBackground}
                 draft={draft}
                 onUpdate={updateDraft}
               />

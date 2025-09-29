@@ -1,4 +1,4 @@
-import type { Class, CharacterDraft } from "@/models/character/creator";
+import type { Class, CharacterDraft, Background } from "@/models/character/creator";
 import SkillChoiceComponent from "../choices/SkillChoiceComponent";
 import WeaponChoiceComponent from "../choices/WeaponChoiceComponent";
 import SpellChoiceComponent from "../choices/SpellChoiceComponent";
@@ -6,13 +6,14 @@ import SpellChoiceComponent from "../choices/SpellChoiceComponent";
 
 type ClassChoicesStepProps = {
   selectedClass: Class;
-  // TODO: Add selected background
+  selectedBackground: Background | null;
   draft: CharacterDraft;
   onUpdate: (updates: Partial<CharacterDraft>) => void;
 }
 
 export default function ClassChoicesStep({
   selectedClass,
+  selectedBackground,
   draft,
   onUpdate,
 }: ClassChoicesStepProps) {
@@ -26,6 +27,7 @@ export default function ClassChoicesStep({
             <SkillChoiceComponent
               choices={selectedClass.skillChoices}
               selected={draft.skills}
+              backgroundSkills={selectedBackground?.skills ?? []}
               onUpdate={(skills) => onUpdate({ skills: skills })}
             />
           </div>

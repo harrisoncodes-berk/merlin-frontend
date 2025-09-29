@@ -10,22 +10,26 @@ type SkillChoiceComponentProps = {
     skills: SkillKey[];
   };
   selected: Skill[];
+  backgroundSkills: Skill[];
   onUpdate: (skills: Skill[]) => void;
 }
 
 export default function SkillChoiceComponent({
   choices,
   selected,
+  backgroundSkills,
   onUpdate,
 }: SkillChoiceComponentProps) {
 
   const expertiseSelected = useMemo(() => selected.filter(s => s.expertise), [selected]);
 
   function toggleSkill(skill: SkillKey) {
-    if (selected.some(s => s.key === skill)) {
-      onUpdate(selected.filter(s => s.key !== skill));
-    } else if (selected.length < choices.proficiencies) {
-      onUpdate([...selected, { key: skill, proficient: true, expertise: false }]);
+    if (!backgroundSkills.some(s => s.key === skill)) {
+      if (selected.some(s => s.key === skill)) {
+        onUpdate(selected.filter(s => s.key !== skill));
+      } else if (selected.length < choices.proficiencies + backgroundSkills.length) {
+        onUpdate([...selected, { key: skill, proficient: true, expertise: false }]);
+      }
     }
   }
 
@@ -45,9 +49,9 @@ export default function SkillChoiceComponent({
     }
   }
 
-  let description = `Select ${choices.proficiencies} skills to be proficient in:`;
+  let description = `Select ${choices.proficiencies + backgroundSkills.length} skills to be proficient in (background skills are automatically selected):`;
   if (choices.expertise) {
-    description = `Select ${choices.expertise} skills to be proficient in and ${choices.expertise} of those skills to be an expert in:`;
+    description = `Select ${choices.proficiencies + backgroundSkills.length} skills to be proficient in and ${choices.expertise} of those skills to be an expert in (background skills are automatically selected):`;
   }
 
   return (
@@ -58,7 +62,7 @@ export default function SkillChoiceComponent({
       <div className="grid grid-cols-2 gap-2">
         {choices.skills.map((skill: SkillKey) => {
           const isProficient = selected.some(s => s.key === skill);
-          const isProficientDisabled = !isProficient && selected.length >= choices.proficiencies;
+          const isProficientDisabled = !isProficient && selected.length >= choices.proficiencies + backgroundSkills.length;
 
           let isExpertise = false;
           let isExpertiseDisabled = true;
@@ -95,7 +99,7 @@ export default function SkillChoiceComponent({
         })}
       </div>
       <div className="text-xs text-white/60">
-        Proficiencies: {selected.length}/{choices.proficiencies}
+        Proficiencies: {selected.length}/{choices.proficiencies + backgroundSkills.length}
         {choices.expertise && (
           <span className="ml-2">
             Expertises: {expertiseSelected.length}/{choices.expertise}
