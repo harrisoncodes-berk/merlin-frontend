@@ -1,4 +1,4 @@
-import type { AbilityKey, Feature, InventoryItem, Skill, SkillKey, Spell, Weapon } from "./characterCommon";
+import type { AbilityKey, Feature, InventoryItem, Skill, SkillKey, Spell, Weapon } from "./character/common";
 
 export type Race = {
     id: string;

@@ -1,5 +1,5 @@
-import type { WeaponChoice } from "@/models/creatorTwo";
-import type { Weapon } from "@/models/characterCommon";
+import type { WeaponChoice } from "@/models/character/creator";
+import type { Weapon } from "@/models/character/common";
 
 type WeaponChoiceComponentProps = { 
   choice: WeaponChoice;

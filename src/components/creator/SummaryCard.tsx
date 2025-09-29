@@ -1,5 +1,5 @@
-import type { Class, Race, Background, CharacterDraft } from "@/models/creatorTwo";
-import type { Feature } from "@/models/characterCommon";
+import type { Class, Race, Background, CharacterDraft } from "@/models/character/creator";
+import type { Feature } from "@/models/character/common";
 import { SKILL_LABEL } from "@/lib/skills";
 
 

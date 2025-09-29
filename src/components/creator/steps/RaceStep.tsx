@@ -1,4 +1,4 @@
-import type { Race } from "@/models/creatorTwo";
+import type { Race } from "@/models/character/creator";
 
 interface RaceStepProps {
   races: Race[];

@@ -4,7 +4,7 @@ import type {
   ComputedSkill,
   SkillKey,
   Skill,
-} from "@/models/character";
+} from "@/models/character/character";
 import { abilityMod } from "@/lib/ability";
 
 export const SKILL_TO_ABILITY: Record<SkillKey, AbilityKey> = {

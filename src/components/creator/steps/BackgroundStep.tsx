@@ -1,4 +1,4 @@
-import type { Background } from "@/models/creatorTwo";
+import type { Background } from "@/models/character/creator";
 
 interface BackgroundStepProps {
   backgrounds: Background[];

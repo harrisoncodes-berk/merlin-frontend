@@ -1,4 +1,4 @@
-import type { Class, CharacterDraft } from "@/models/creatorTwo";
+import type { Class, CharacterDraft } from "@/models/character/creator";
 import SkillChoiceComponent from "../choices/SkillChoiceComponent";
 import WeaponChoiceComponent from "../choices/WeaponChoiceComponent";
 import SpellChoiceComponent from "../choices/SpellChoiceComponent";

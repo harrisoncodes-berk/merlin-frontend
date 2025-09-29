@@ -2,7 +2,7 @@ import type {
   AbilityKey,
   AbilityScores,
   InventoryItem,
-} from "@/models/character";
+} from "@/models/character/character";
 
 export function abilityMod(score: number): number {
   // 5e: floor((score - 10)/2)

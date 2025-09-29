@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { Character } from "@/models/character";
+import type { Character } from "@/models/character/character";
 import { listCharacters, getCharacterById } from "@/api/characterApi";
 import { useAuth } from "@/contexts/AuthProvider";
 

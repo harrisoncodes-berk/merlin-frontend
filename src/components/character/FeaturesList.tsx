@@ -1,4 +1,4 @@
-import type { Feature } from "@/models/character";
+import type { Feature } from "@/models/character/character";
 
 export default function FeaturesList({ features }: { features: Feature[] }) {
   return (

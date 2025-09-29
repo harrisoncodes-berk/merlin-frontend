@@ -1,4 +1,4 @@
-import type { CharacterDraft, Class, Race, Background } from "@/models/creatorTwo";
+import type { CharacterDraft, Class, Race, Background } from "@/models/character/creator";
 
 type SummaryStepProps = {
   draft: CharacterDraft;

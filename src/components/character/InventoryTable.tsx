@@ -1,4 +1,4 @@
-import type { InventoryItem } from "@/models/character";
+import type { InventoryItem } from "@/models/character/character";
 
 export default function InventoryTable({
   items,

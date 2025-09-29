@@ -1,4 +1,4 @@
-import type { AbilityScores } from "@/models/character";
+import type { AbilityScores } from "@/models/character/character";
 
 export default function AbilitiesGrid({
   scores,

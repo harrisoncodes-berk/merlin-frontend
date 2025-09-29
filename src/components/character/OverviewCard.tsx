@@ -1,4 +1,4 @@
-import type { Character } from "@/models/character";
+import type { Character } from "@/models/character/character";
 
 export default function OverviewCard({ c }: { c: Character }) {
   return (

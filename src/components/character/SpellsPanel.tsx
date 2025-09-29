@@ -1,4 +1,4 @@
-import type { Spell, SpellSlots, SpellLevel } from "@/models/character";
+import type { Spell, SpellSlots, SpellLevel } from "@/models/character/character";
 
 export default function SpellsPanel({
   spells,

@@ -1,4 +1,4 @@
-import type { SpellChoice } from "@/models/creatorTwo";
+import type { SpellChoice } from "@/models/character/creator";
 
 interface SpellChoiceComponentProps {
   choice: SpellChoice;

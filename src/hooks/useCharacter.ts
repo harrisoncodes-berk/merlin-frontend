@@ -6,7 +6,7 @@ import {
   totalWeight,
 } from "@/lib/ability";
 import { computeSkills } from "@/lib/skills";
-import type { CharacterDerived } from "@/models/character";
+import type { CharacterDerived } from "@/models/character/character";
 
 export function useCharacter() {
   const { character, isLoading, error, selectCharacter } =

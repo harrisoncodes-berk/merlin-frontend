@@ -1,4 +1,4 @@
-import type { Class } from "@/models/creatorTwo";
+import type { Class } from "@/models/character/creator";
 
 interface ClassStepProps {
   classes: Class[];

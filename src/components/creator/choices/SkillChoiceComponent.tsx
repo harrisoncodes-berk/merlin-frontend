@@ -1,4 +1,4 @@
-import type { SkillKey } from "@/models/characterCommon";
+import type { SkillKey } from "@/models/character/common";
 import { SKILL_LABEL } from "@/lib/skills";
 
 interface SkillChoiceComponentProps {
