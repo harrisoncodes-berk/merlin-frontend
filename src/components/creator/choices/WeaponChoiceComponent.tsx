@@ -1,7 +1,8 @@
 import type { WeaponChoice } from "@/models/character/creator";
 import type { Weapon } from "@/models/character/common";
+import { useMemo } from "react";
 
-type WeaponChoiceComponentProps = { 
+type WeaponChoiceComponentProps = {
   choice: WeaponChoice;
   selected: Weapon[];
   onUpdate: (weapons: Weapon[]) => void;
@@ -12,13 +13,15 @@ export default function WeaponChoiceComponent({
   selected,
   onUpdate,
 }: WeaponChoiceComponentProps) {
+  const choiceSelections = useMemo(() => selected.filter(w => choice.choices.some(c => c.id === w.id)), [selected, choice]);
+
   function toggleWeapon(weaponId: string) {
     const weapon = choice.choices.find(w => w.id === weaponId);
     if (!weapon) return;
-    
+
     if (selected.includes(weapon)) {
       onUpdate(selected.filter(w => w !== weapon));
-    } else if (selected.length < choice.number) {
+    } else if (choiceSelections.length < choice.number) {
       onUpdate([...selected, weapon]);
     }
   }
@@ -33,15 +36,14 @@ export default function WeaponChoiceComponent({
       </div>
       <div className="grid gap-2">
         {choice.choices.map((weapon) => {
-          const isSelected = selected.includes(weapon);
-          const isDisabled = !isSelected && selected.length >= choice.number;
-          
+          const isSelected = choiceSelections.includes(weapon);
+          const isDisabled = !isSelected && choiceSelections.length >= choice.number;
+
           return (
             <label
               key={weapon.id}
-              className={`flex items-start gap-3 rounded-lg p-2 transition-colors ${
-                isDisabled ? "opacity-50" : "cursor-pointer hover:bg-slate-700/50"
-              } ${isSelected ? "bg-indigo-600/20 ring-1 ring-indigo-400" : "bg-slate-900/50 ring-1 ring-white/10"}`}
+              className={`flex items-start gap-3 rounded-lg p-2 transition-colors ${isDisabled ? "opacity-50" : "cursor-pointer hover:bg-slate-700/50"
+                } ${isSelected ? "bg-indigo-600/20 ring-1 ring-indigo-400" : "bg-slate-900/50 ring-1 ring-white/10"}`}
             >
               <input
                 type="checkbox"
@@ -62,7 +64,7 @@ export default function WeaponChoiceComponent({
         })}
       </div>
       <div className="mt-2 text-xs text-white/60">
-        Selected: {selected.length}/{choice.number}
+        Selected: {choiceSelections.length}/{choice.number}
       </div>
     </div>
   );

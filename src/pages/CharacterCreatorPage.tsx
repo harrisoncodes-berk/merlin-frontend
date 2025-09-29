@@ -69,12 +69,11 @@ export default function CharacterCreatorPage() {
   const isChoicesStepValid = useMemo(() => {
     if (!selectedClass) return false;
 
-    // Check skill choices
+    // TODO: Check if expertise is applicable
     if (selectedClass.skillChoices && draft.skillProficiencies.length !== selectedClass.skillChoices.proficiencies) {
       return false;
     }
 
-    // Check weapon choices
     if (selectedClass.weaponChoices) {
       for (const weaponChoice of selectedClass.weaponChoices) {
         const selectedWeapons = draft.weapons.filter(weapon =>
@@ -86,7 +85,6 @@ export default function CharacterCreatorPage() {
       }
     }
 
-    // Check spell choices
     if (selectedClass.spellChoices) {
       for (const spellChoice of selectedClass.spellChoices) {
         const selectedSpells = draft.spells.filter(id =>
