@@ -1,20 +1,10 @@
-import type { Class } from "@/models/creatorTwo";
-import type { SkillKey } from "@/models/characterCommon";
+import type { Class, CharacterDraft } from "@/models/creatorTwo";
 import SkillChoiceComponent from "../choices/SkillChoiceComponent";
 import WeaponChoiceComponent from "../choices/WeaponChoiceComponent";
 import SpellChoiceComponent from "../choices/SpellChoiceComponent";
 
-interface CharacterDraft {
-  name: string;
-  classId: string | null;
-  raceId: string | null;
-  backgroundId: string | null;
-  skillProficiencies: SkillKey[];
-  weaponProficiencies: string[];
-  spells: string[];
-}
 
-interface ClassChoicesStepProps {
+type ClassChoicesStepProps = {
   selectedClass: Class;
   draft: CharacterDraft;
   onUpdate: (updates: Partial<CharacterDraft>) => void;
@@ -51,8 +41,8 @@ export default function ClassChoicesStep({
                 <WeaponChoiceComponent
                   key={choice.id}
                   choice={choice}
-                  selected={draft.weaponProficiencies}
-                  onUpdate={(weapons) => onUpdate({ weaponProficiencies: weapons })}
+                  selected={draft.weapons}
+                  onUpdate={(weapons) => onUpdate({ weapons: weapons })}
                 />
               ))}
             </div>

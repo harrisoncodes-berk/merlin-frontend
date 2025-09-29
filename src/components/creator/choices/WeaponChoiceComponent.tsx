@@ -1,9 +1,10 @@
 import type { WeaponChoice } from "@/models/creatorTwo";
+import type { Weapon } from "@/models/characterCommon";
 
-interface WeaponChoiceComponentProps {
+type WeaponChoiceComponentProps = { 
   choice: WeaponChoice;
-  selected: string[];
-  onUpdate: (weapons: string[]) => void;
+  selected: Weapon[];
+  onUpdate: (weapons: Weapon[]) => void;
 }
 
 export default function WeaponChoiceComponent({
@@ -15,10 +16,10 @@ export default function WeaponChoiceComponent({
     const weapon = choice.choices.find(w => w.id === weaponId);
     if (!weapon) return;
     
-    if (selected.includes(weapon.name)) {
-      onUpdate(selected.filter(name => name !== weapon.name));
+    if (selected.includes(weapon)) {
+      onUpdate(selected.filter(w => w !== weapon));
     } else if (selected.length < choice.number) {
-      onUpdate([...selected, weapon.name]);
+      onUpdate([...selected, weapon]);
     }
   }
 
@@ -32,7 +33,7 @@ export default function WeaponChoiceComponent({
       </div>
       <div className="grid gap-2">
         {choice.choices.map((weapon) => {
-          const isSelected = selected.includes(weapon.name);
+          const isSelected = selected.includes(weapon);
           const isDisabled = !isSelected && selected.length >= choice.number;
           
           return (

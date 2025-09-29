@@ -1,4 +1,5 @@
 import type { SkillKey } from "@/models/characterCommon";
+import { SKILL_LABEL } from "@/lib/skills";
 
 interface SkillChoiceComponentProps {
   choices: {
@@ -16,27 +17,6 @@ export default function SkillChoiceComponent({
   selected,
   onUpdate,
 }: SkillChoiceComponentProps) {
-  const skillLabels: Record<SkillKey, string> = {
-    acrobatics: "Acrobatics",
-    animalHandling: "Animal Handling", 
-    arcana: "Arcana",
-    athletics: "Athletics",
-    deception: "Deception",
-    history: "History",
-    insight: "Insight",
-    intimidation: "Intimidation",
-    investigation: "Investigation",
-    medicine: "Medicine",
-    nature: "Nature",
-    perception: "Perception",
-    performance: "Performance",
-    persuasion: "Persuasion",
-    religion: "Religion",
-    sleightOfHand: "Sleight of Hand",
-    stealth: "Stealth",
-    survival: "Survival",
-  };
-
   function toggleSkill(skill: SkillKey) {
     if (selected.includes(skill)) {
       onUpdate(selected.filter(s => s !== skill));
@@ -69,7 +49,7 @@ export default function SkillChoiceComponent({
                 onChange={() => toggleSkill(skill)}
                 className="rounded"
               />
-              <span className="text-sm">{skillLabels[skill]}</span>
+              <span className="text-sm">{SKILL_LABEL[skill]}</span>
             </label>
           );
         })}

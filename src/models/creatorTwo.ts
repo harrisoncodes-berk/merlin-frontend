@@ -61,3 +61,13 @@ export type Background = {
     skills?: Skill[];
     inventory?: InventoryItem[];
 }
+
+export type CharacterDraft = {
+    name: string;
+    classId: string | null;
+    raceId: string | null;
+    backgroundId: string | null;
+    skillProficiencies: SkillKey[];
+    weapons: Weapon[];
+    spells: string[];
+  }

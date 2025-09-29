@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { listRaces, listClasses, listBackgrounds } from "@/api/characterCreatorApiTwo";
-import type { Race, Class, Background } from "@/models/creatorTwo";
-import type { SkillKey } from "@/models/characterCommon";
+import type { Race, Class, Background, CharacterDraft } from "@/models/creatorTwo";
 import ClassStep from "@/components/creator/steps/ClassStep";
 import RaceStep from "@/components/creator/steps/RaceStep";
 import BackgroundStep from "@/components/creator/steps/BackgroundStep";
@@ -11,16 +10,6 @@ import SummaryStep from "@/components/creator/steps/SummaryStep";
 import SummaryCard from "@/components/creator/SummaryCard";
 
 type Step = "class" | "race" | "background" | "choices" | "summary";
-
-type CharacterDraft = {
-  name: string;
-  classId: string | null;
-  raceId: string | null;
-  backgroundId: string | null;
-  skillProficiencies: SkillKey[];
-  weaponProficiencies: string[];
-  spells: string[];
-};
 
 export default function CharacterCreatorPageTwo() {
   const nav = useNavigate();
@@ -40,7 +29,7 @@ export default function CharacterCreatorPageTwo() {
     raceId: null,
     backgroundId: null,
     skillProficiencies: [],
-    weaponProficiencies: [],
+    weapons: [],
     spells: [],
   });
 
@@ -58,10 +47,8 @@ export default function CharacterCreatorPageTwo() {
         setRaces(racesData);
         setClasses(classesData);
         setBackgrounds(backgroundsData);
-        console.log('classesData', classesData);
       } catch (e: any) {
         if (!mounted) return;
-        console.log('e', e);
         setError(e?.message ?? "Failed to load character data");
       }
     })();
@@ -81,28 +68,28 @@ export default function CharacterCreatorPageTwo() {
   // Validation logic for choices step
   const isChoicesStepValid = useMemo(() => {
     if (!selectedClass) return false;
-    
+
     // Check skill choices
     if (selectedClass.skillChoices && draft.skillProficiencies.length !== selectedClass.skillChoices.proficiencies) {
       return false;
     }
-    
+
     // Check weapon choices
     if (selectedClass.weaponChoices) {
       for (const weaponChoice of selectedClass.weaponChoices) {
-        const selectedWeapons = draft.weaponProficiencies.filter(id => 
-          weaponChoice.choices.some((w: any) => w.id === id)
+        const selectedWeapons = draft.weapons.filter(weapon =>
+          weaponChoice.choices.some((w: any) => w.id === weapon.id)
         );
         if (selectedWeapons.length !== weaponChoice.number) {
           return false;
         }
       }
     }
-    
+
     // Check spell choices
     if (selectedClass.spellChoices) {
       for (const spellChoice of selectedClass.spellChoices) {
-        const selectedSpells = draft.spells.filter(id => 
+        const selectedSpells = draft.spells.filter(id =>
           spellChoice.choices.some((s: any) => s.id === id)
         );
         if (selectedSpells.length !== spellChoice.number) {
@@ -110,7 +97,7 @@ export default function CharacterCreatorPageTwo() {
         }
       }
     }
-    
+
     return true;
   }, [selectedClass, draft]);
 
@@ -125,7 +112,7 @@ export default function CharacterCreatorPageTwo() {
   function updateDraft(updates: Partial<CharacterDraft>) {
     setDraft((prev) => {
       const newDraft = { ...prev, ...updates };
-      
+
       // If class is changing, clear background selection if it doesn't match the new class
       if (updates.classId && updates.classId !== prev.classId) {
         if (newDraft.backgroundId) {
@@ -135,7 +122,7 @@ export default function CharacterCreatorPageTwo() {
           }
         }
       }
-      
+
       return newDraft;
     });
   }
@@ -145,7 +132,7 @@ export default function CharacterCreatorPageTwo() {
     if (currentStep === "class" && !draft.classId) return;
     if (currentStep === "race" && !draft.raceId) return;
     if (currentStep === "background" && !draft.backgroundId) return;
-    
+
     setCurrentStep(step);
   }
 
@@ -211,13 +198,12 @@ export default function CharacterCreatorPageTwo() {
                 <div key={step.key} className="flex flex-col items-center">
                   <button
                     onClick={() => goToStep(step.key)}
-                    className={`mb-2 h-8 w-8 rounded-full text-xs font-semibold transition-colors ${
-                      step.key === currentStep
-                        ? "bg-indigo-600 text-white"
-                        : step.completed
+                    className={`mb-2 h-8 w-8 rounded-full text-xs font-semibold transition-colors ${step.key === currentStep
+                      ? "bg-indigo-600 text-white"
+                      : step.completed
                         ? "bg-green-600 text-white"
                         : "bg-slate-700 text-white/60"
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </button>

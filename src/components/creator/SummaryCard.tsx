@@ -1,17 +1,9 @@
-import type { Class, Race, Background } from "@/models/creatorTwo";
-import type { Feature, SkillKey } from "@/models/characterCommon";
+import type { Class, Race, Background, CharacterDraft } from "@/models/creatorTwo";
+import type { Feature } from "@/models/characterCommon";
+import { SKILL_LABEL } from "@/lib/skills";
 
-interface CharacterDraft {
-  name: string;
-  classId: string | null;
-  raceId: string | null;
-  backgroundId: string | null;
-  skillProficiencies: SkillKey[];
-  weaponProficiencies: string[];
-  spells: string[];
-}
 
-interface SummaryCardProps {
+type SummaryCardProps = {
   draft: CharacterDraft;
   selectedClass: Class | null;
   selectedRace: Race | null;
@@ -24,26 +16,6 @@ export default function SummaryCard({
   selectedRace,
   selectedBackground,
 }: SummaryCardProps) {
-  const skillLabels: Record<SkillKey, string> = {
-    acrobatics: "Acrobatics",
-    animalHandling: "Animal Handling",
-    arcana: "Arcana",
-    athletics: "Athletics",
-    deception: "Deception",
-    history: "History",
-    insight: "Insight",
-    intimidation: "Intimidation",
-    investigation: "Investigation",
-    medicine: "Medicine",
-    nature: "Nature",
-    perception: "Perception",
-    performance: "Performance",
-    persuasion: "Persuasion",
-    religion: "Religion",
-    sleightOfHand: "Sleight of Hand",
-    stealth: "Stealth",
-    survival: "Survival",
-  };
 
   return (
     <div className="space-y-4 w-80 max-w-80">
@@ -83,17 +55,17 @@ export default function SummaryCard({
         <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
           <div className="mb-2 text-sm font-semibold text-white/90">Skill Proficiencies</div>
           <div className="text-sm text-white/70 break-words leading-relaxed">
-            {draft.skillProficiencies.map(skill => skillLabels[skill]).join(", ")}
+            {draft.skillProficiencies.map(skill => SKILL_LABEL[skill]).join(", ")}
           </div>
         </div>
       )}
 
       {/* Weapon Proficiencies */}
-      {draft.weaponProficiencies.length > 0 && (
+      {draft.weapons.length > 0 && (
         <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
-          <div className="mb-2 text-sm font-semibold text-white/90">Weapon Proficiencies</div>
+          <div className="mb-2 text-sm font-semibold text-white/90">Weapons</div>
           <div className="text-sm text-white/70 break-words leading-relaxed">
-            {draft.weaponProficiencies.join(", ")}
+            {draft.weapons.map(weapon => weapon.name).join(", ")}
           </div>
         </div>
       )}

@@ -1,24 +1,13 @@
-import type { Class, Race, Background } from "@/models/creatorTwo";
-import type { SkillKey } from "@/models/characterCommon";
+import type { CharacterDraft, Class, Race, Background } from "@/models/creatorTwo";
 
-interface CharacterDraft {
-  name: string;
-  classId: string | null;
-  raceId: string | null;
-  backgroundId: string | null;
-  skillProficiencies: SkillKey[];
-  weaponProficiencies: string[];
-  spells: string[];
-}
-
-interface SummaryStepProps {
+type SummaryStepProps = {
   draft: CharacterDraft;
   selectedClass: Class | null;
   selectedRace: Race | null;
   selectedBackground: Background | null;
 }
 
-export default function SummaryStep({
+export default function SummaryStep({ // TODO: Improve this component
   draft,
   selectedClass,
   selectedRace,
