@@ -5,11 +5,12 @@ import type { Race, Class, Background, CharacterDraft } from "@/models/character
 import ClassStep from "@/components/creator/steps/ClassStep";
 import RaceStep from "@/components/creator/steps/RaceStep";
 import BackgroundStep from "@/components/creator/steps/BackgroundStep";
+import AbilityStep from "@/components/creator/steps/AbilityStep";
 import ClassChoicesStep from "@/components/creator/steps/ClassChoicesStep";
 import SummaryStep from "@/components/creator/steps/SummaryStep";
 import SummaryCard from "@/components/creator/SummaryCard";
 
-type Step = "class" | "race" | "background" | "choices" | "summary";
+type Step = "class" | "race" | "background" | "abilities" | "choices" | "summary";
 
 export default function CharacterCreatorPage() {
   const nav = useNavigate();
@@ -31,6 +32,14 @@ export default function CharacterCreatorPage() {
     skills: [],
     weapons: [],
     spells: [],
+    abilities: {
+      str: 0,
+      dex: 0,
+      con: 0,
+      int: 0,
+      wis: 0,
+      cha: 0,
+    },
   });
 
   // Load initial data
@@ -98,10 +107,16 @@ export default function CharacterCreatorPage() {
     return true;
   }, [selectedClass, draft]);
 
+  const isAbilitiesStepValid = useMemo(() => {
+    const abilityScores = Object.values(draft.abilities) as number[];
+    return abilityScores.every(score => score > 0) && abilityScores.length === 6;
+  }, [draft.abilities]);
+
   const steps: { key: Step; label: string; completed: boolean }[] = [
     { key: "class", label: "Class", completed: !!draft.classId },
     { key: "race", label: "Race", completed: !!draft.raceId },
     { key: "background", label: "Background", completed: !!draft.backgroundId },
+    { key: "abilities", label: "Abilities", completed: isAbilitiesStepValid },
     { key: "choices", label: "Choices", completed: isChoicesStepValid },
     { key: "summary", label: "Summary", completed: false },
   ];
@@ -128,6 +143,7 @@ export default function CharacterCreatorPage() {
     if (currentStep === "class" && !draft.classId) return;
     if (currentStep === "race" && !draft.raceId) return;
     if (currentStep === "background" && !draft.backgroundId) return;
+    if (currentStep === "abilities" && !isAbilitiesStepValid) return;
 
     setCurrentStep(step);
   }
@@ -213,7 +229,7 @@ export default function CharacterCreatorPage() {
           <div className="rounded-2xl bg-slate-900/50 p-4 ring-1 ring-white/10">
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-white/90">
-                Character Name *
+                Character Name
               </span>
               <input
                 value={draft.name}
@@ -245,6 +261,12 @@ export default function CharacterCreatorPage() {
                 backgrounds={filteredBackgrounds}
                 selectedId={draft.backgroundId}
                 onSelect={(backgroundId) => updateDraft({ backgroundId })}
+              />
+            )}
+            {currentStep === "abilities" && (
+              <AbilityStep
+                abilities={draft.abilities}
+                onUpdate={(abilities) => updateDraft({ abilities })}
               />
             )}
             {currentStep === "choices" && selectedClass && (
@@ -304,6 +326,7 @@ export default function CharacterCreatorPage() {
                     (currentStep === "class" && !draft.classId) ||
                     (currentStep === "race" && !draft.raceId) ||
                     (currentStep === "background" && !draft.backgroundId) ||
+                    (currentStep === "abilities" && !isAbilitiesStepValid) ||
                     (currentStep === "choices" && !isChoicesStepValid)
                   }
                   className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-60"

@@ -4,6 +4,15 @@ export type HitDice = {
     sides: number;
 }
 
+export type AbilityScores = {
+    str: number;
+    dex: number;
+    con: number;
+    int: number;
+    wis: number;
+    cha: number;
+};
+
 export type Feature = {
     id: string;
     name: string;
@@ -55,6 +64,15 @@ export interface Spell {
 }
 
 export type AbilityKey = "str" | "dex" | "con" | "int" | "wis" | "cha";
+
+export const ABILITY_NAMES: Record<AbilityKey, string> = {
+    str: "Strength",
+    dex: "Dexterity",
+    con: "Constitution",
+    int: "Intelligence",
+    wis: "Wisdom",
+    cha: "Charisma"
+};
 
 export type InventoryItem = {
     id: string;

@@ -1,4 +1,4 @@
-import type { AbilityKey } from "@/models/character/character";
+import type { AbilityKey } from "@/models/character/common";
 
 type SkillRow = {
   key: string;
