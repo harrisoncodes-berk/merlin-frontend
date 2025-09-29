@@ -1,6 +1,8 @@
 import type { Class, Race, Background, CharacterDraft } from "@/models/character/creator";
 import type { Feature, SkillKey } from "@/models/character/common";
 import { SKILL_LABEL } from "@/lib/skills";
+import { totalWeight } from "@/lib/ability";
+import InventoryTable from "@/components/character/InventoryTable";
 
 
 type SummaryCardProps = {
@@ -80,9 +82,14 @@ export default function SummaryCard({
         </div>
       )}
 
-      {/* Class Features */}
-      {selectedClass?.features && selectedClass.features.length > 0 && (
-        FeatureList({ features: selectedClass.features, title: "Class Features" })
+      {/* Background Features */}
+      {selectedBackground?.features && selectedBackground.features.length > 0 && (
+        FeatureList({ features: selectedBackground.features, title: "Background Features" })
+      )}
+
+      {/* Background Inventory */}
+      {selectedBackground?.inventory && selectedBackground.inventory.length > 0 && (
+        <InventoryTable items={selectedBackground.inventory} total={totalWeight(selectedBackground.inventory)} />
       )}
 
       {/* Race Features */}
@@ -90,9 +97,9 @@ export default function SummaryCard({
         FeatureList({ features: selectedRace.features, title: "Race Features" })
       )}
 
-      {/* Background Features */}
-      {selectedBackground?.features && selectedBackground.features.length > 0 && (
-        FeatureList({ features: selectedBackground.features, title: "Background Features" })
+      {/* Class Features */}
+      {selectedClass?.features && selectedClass.features.length > 0 && (
+        FeatureList({ features: selectedClass.features, title: "Class Features" })
       )}
     </div>
   );
@@ -100,20 +107,20 @@ export default function SummaryCard({
 
 function FeatureList({ features, title }: { features: Feature[], title: string }) {
   return (
-      <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
-        <div className="mb-2 text-sm font-semibold text-white/90">{title}</div>
-        <div className="space-y-2">
-          {features.map((feature) => (
-            <div key={feature.id} className="text-sm">
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-medium">{feature.name}</span>
-              </div>
-              {feature.description && (
-                <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
-              )}
+    <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
+      <div className="mb-2 text-sm font-semibold text-white/90">{title}</div>
+      <div className="space-y-2">
+        {features.map((feature) => (
+          <div key={feature.id} className="text-sm">
+            <div className="flex items-start justify-between gap-2">
+              <span className="font-medium">{feature.name}</span>
             </div>
-          ))}
-        </div>
+            {feature.description && (
+              <div className="text-white/70 mt-1 break-words leading-relaxed">{feature.description}</div>
+            )}
+          </div>
+        ))}
       </div>
+    </div>
   )
 }
