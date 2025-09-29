@@ -28,7 +28,7 @@ export default function CharacterCreatorPage() {
     classId: null,
     raceId: null,
     backgroundId: null,
-    skillProficiencies: [],
+    skills: [],
     weapons: [],
     spells: [],
   });
@@ -70,7 +70,7 @@ export default function CharacterCreatorPage() {
     if (!selectedClass) return false;
 
     // TODO: Check if expertise is applicable
-    if (selectedClass.skillChoices && draft.skillProficiencies.length !== selectedClass.skillChoices.proficiencies) {
+    if (selectedClass.skillChoices && draft.skills.length !== selectedClass.skillChoices.proficiencies) {
       return false;
     }
 

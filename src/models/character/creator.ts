@@ -67,7 +67,7 @@ export type CharacterDraft = {
     classId: string | null;
     raceId: string | null;
     backgroundId: string | null;
-    skillProficiencies: SkillKey[]; // TODO: Update to be Skill[]
+    skills: Skill[]; // TODO: Update to be Skill[]
     weapons: Weapon[]; 
     spells: string[]; // TODO: Update type
     // TODO: Add inventory items

@@ -1,5 +1,5 @@
 import type { Class, Race, Background, CharacterDraft } from "@/models/character/creator";
-import type { Feature } from "@/models/character/common";
+import type { Feature, SkillKey } from "@/models/character/common";
 import { SKILL_LABEL } from "@/lib/skills";
 
 
@@ -51,11 +51,11 @@ export default function SummaryCard({
       </div>
 
       {/* Skill Proficiencies */}
-      {draft.skillProficiencies.length > 0 && (
+      {draft.skills.length > 0 && (
         <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
           <div className="mb-2 text-sm font-semibold text-white/90">Skill Proficiencies</div>
           <div className="text-sm text-white/70 break-words leading-relaxed">
-            {draft.skillProficiencies.map(skill => SKILL_LABEL[skill]).join(", ")}
+            {draft.skills.map(skill => SKILL_LABEL[skill.key as SkillKey]).join(", ")}
           </div>
         </div>
       )}

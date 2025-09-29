@@ -6,6 +6,7 @@ import SpellChoiceComponent from "../choices/SpellChoiceComponent";
 
 type ClassChoicesStepProps = {
   selectedClass: Class;
+  // TODO: Add selected background
   draft: CharacterDraft;
   onUpdate: (updates: Partial<CharacterDraft>) => void;
 }
@@ -19,23 +20,20 @@ export default function ClassChoicesStep({
     <div className="h-full w-full flex flex-col">
       <h3 className="mb-4 text-lg font-semibold">Class Choices</h3>
       <div className="flex-1 space-y-6">
-        {selectedClass.skillChoices && ( // TODO: Enable expertise selection if applicable
+        {selectedClass.skillChoices && (
           <div>
-            <h4 className="mb-2 font-medium">Skill Proficiencies</h4>
-            <div className="text-sm text-white/70 mb-3">
-              {selectedClass.skillChoices.description}
-            </div>
+            <h4 className="mb-2 font-medium">Skills</h4>
             <SkillChoiceComponent
               choices={selectedClass.skillChoices}
-              selected={draft.skillProficiencies}
-              onUpdate={(skills) => onUpdate({ skillProficiencies: skills })}
+              selected={draft.skills}
+              onUpdate={(skills) => onUpdate({ skills: skills })}
             />
           </div>
         )}
 
         {selectedClass.weaponChoices && selectedClass.weaponChoices.length > 0 && (
           <div>
-            <h4 className="mb-2 font-medium">Weapon Choices</h4>
+            <h4 className="mb-2 font-medium">Weapons</h4>
             <div className="space-y-3">
               {selectedClass.weaponChoices.map((choice) => (
                 <WeaponChoiceComponent
