@@ -1,8 +1,11 @@
 import type { Class, Race, Background, CharacterDraft } from "@/models/character/creator";
+import { allAbilityMods } from "@/lib/ability";
 import type { Feature, SkillKey } from "@/models/character/common";
 import { SKILL_LABEL } from "@/lib/skills";
 import { totalWeight } from "@/lib/ability";
 import InventoryTable from "@/components/character/InventoryTable";
+import AbilitiesGrid from "@/components/character/AbilitiesGrid";
+import { useMemo } from "react";
 
 
 type SummaryCardProps = {
@@ -18,6 +21,7 @@ export default function SummaryCard({
   selectedRace,
   selectedBackground,
 }: SummaryCardProps) {
+  const selectedAbilities = useMemo(() => Object.fromEntries(Object.entries(draft.abilities).filter(([, value]) => value > 0)), [draft.abilities]);
 
   return (
     <div className="space-y-4 w-80 max-w-80">
@@ -82,6 +86,11 @@ export default function SummaryCard({
         </div>
       )}
 
+      {/* Abilities */}
+      {selectedAbilities && Object.values(selectedAbilities).length > 0 && (
+        <AbilitiesGrid scores={draft.abilities} mods={allAbilityMods(draft.abilities)} abbrv={true} />
+      )}
+      
       {/* Background Features */}
       {selectedBackground?.features && selectedBackground.features.length > 0 && (
         FeatureList({ features: selectedBackground.features, title: "Background Features" })

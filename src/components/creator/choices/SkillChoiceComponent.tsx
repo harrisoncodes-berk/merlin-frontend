@@ -93,8 +93,10 @@ export default function SkillChoiceComponent({
                   className="rounded"
                 />
               )}
-              <span className="text-sm">{SKILL_LABEL[skill]}</span>
-              <span className="text-sm text-white/70">({SKILL_TO_ABILITY[skill]})</span>
+              <div className="flex-1 flex justify-between items-center">
+                <span className="text-sm">{SKILL_LABEL[skill]}</span>
+                <span className="text-sm text-white/70">({SKILL_TO_ABILITY[skill]})</span>
+              </div>
             </label>
           );
         })}

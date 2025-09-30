@@ -78,7 +78,7 @@ export default function CharacterCreatorPage() {
   const isChoicesStepValid = useMemo(() => {
     if (!selectedClass) return false;
 
-    if (selectedClass.skillChoices && draft.skills.length !== selectedClass.skillChoices.proficiencies && (!selectedClass.skillChoices.expertise || draft.skills.filter(s => s.expertise).length !== selectedClass.skillChoices.expertise)) {
+    if (selectedClass.skillChoices && draft.skills.length !== selectedClass.skillChoices.proficiencies + (selectedBackground?.skills?.length ?? 0) && (!selectedClass.skillChoices.expertise || draft.skills.filter(s => s.expertise).length !== selectedClass.skillChoices.expertise)) {
       return false;
     }
 
