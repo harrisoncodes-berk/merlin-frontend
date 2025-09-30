@@ -225,21 +225,23 @@ export default function CharacterCreatorPage() {
             </div>
           </div>
 
-          {/* Character Name */}
-          <div className="rounded-2xl bg-slate-900/50 p-4 ring-1 ring-white/10">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-white/90">
-                Character Name
-              </span>
-              <input
-                value={draft.name}
-                onChange={(e) => updateDraft({ name: e.target.value })}
-                placeholder="Enter your character's name"
-                className="w-full rounded-xl bg-slate-900/70 px-3 py-2 text-white placeholder:text-slate-400 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
-            </label>
-          </div>
-
+          {currentStep === "class" && (
+            <>
+              <div className="rounded-2xl bg-slate-900/50 p-4 ring-1 ring-white/10">
+                <label className="block">
+                  <span className="mb-1 block text-sm font-medium text-white/90">
+                    Character Name
+                  </span>
+                  <input
+                    value={draft.name}
+                    onChange={(e) => updateDraft({ name: e.target.value })}
+                    placeholder="Enter your character's name"
+                    className="w-full rounded-xl bg-slate-900/70 px-3 py-2 text-white placeholder:text-slate-400 ring-1 ring-white/10 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  />
+                </label>
+              </div>
+            </>
+          )}
           {/* Step Content */}
           <div className="rounded-2xl bg-slate-900/50 p-4 ring-1 ring-white/10 min-h-[500px] flex flex-col w-full">
             {currentStep === "class" && (
@@ -348,7 +350,7 @@ export default function CharacterCreatorPage() {
           />
         </aside>
 
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

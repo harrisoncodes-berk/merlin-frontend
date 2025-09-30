@@ -1,5 +1,5 @@
 import type { Skill, SkillKey } from "@/models/character/common";
-import { SKILL_LABEL } from "@/lib/skills";
+import { SKILL_LABEL, SKILL_TO_ABILITY } from "@/lib/skills";
 import { useMemo } from "react";
 
 type SkillChoiceComponentProps = {
@@ -94,6 +94,7 @@ export default function SkillChoiceComponent({
                 />
               )}
               <span className="text-sm">{SKILL_LABEL[skill]}</span>
+              <span className="text-sm text-white/70">({SKILL_TO_ABILITY[skill]})</span>
             </label>
           );
         })}

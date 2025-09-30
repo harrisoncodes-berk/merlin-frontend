@@ -75,7 +75,7 @@ export default function AbilityStep({ abilities, onUpdate }: AbilityStepProps) {
                       <button
                         key={score}
                         onClick={() => assignScore(ability, score)}
-                        className="px-3 py-1 bg-slate-700/50 hover:bg-slate-600/50 rounded border border-white/10 text-white/90 font-mono transition-colors"
+                        className="px-2 py-1 bg-slate-700/50 hover:bg-slate-600/50 rounded border border-white/10 text-white/90 font-mono transition-colors"
                       >
                         {score}
                       </button>
