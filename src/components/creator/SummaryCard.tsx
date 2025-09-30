@@ -81,7 +81,7 @@ export default function SummaryCard({
         <div className="rounded-2xl bg-slate-900/60 p-4 ring-1 ring-white/10">
           <div className="mb-2 text-sm font-semibold text-white/90">Spells</div>
           <div className="text-sm text-white/70 break-words leading-relaxed">
-            {draft.spells.join(", ")}
+            {draft.spells.map(spell => spell.name).join(", ")}
           </div>
         </div>
       )}
@@ -90,7 +90,7 @@ export default function SummaryCard({
       {selectedAbilities && Object.values(selectedAbilities).length > 0 && (
         <AbilitiesGrid scores={draft.abilities} mods={allAbilityMods(draft.abilities)} abbrv={true} />
       )}
-      
+
       {/* Background Features */}
       {selectedBackground?.features && selectedBackground.features.length > 0 && (
         FeatureList({ features: selectedBackground.features, title: "Background Features" })

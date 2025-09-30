@@ -69,6 +69,6 @@ export type CharacterDraft = {
     backgroundId: string | null;
     skills: Skill[];
     weapons: Weapon[];
-    spells: string[]; // TODO: Update type
+    spells: Spell[];
     abilities: AbilityScores;
 }

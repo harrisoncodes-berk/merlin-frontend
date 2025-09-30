@@ -1,9 +1,11 @@
 import type { SpellChoice } from "@/models/character/creator";
+import type { Spell } from "@/models/character/common";
+import { useMemo } from "react";
 
 interface SpellChoiceComponentProps {
   choice: SpellChoice;
-  selected: string[];
-  onUpdate: (spells: string[]) => void;
+  selected: Spell[];
+  onUpdate: (spells: Spell[]) => void;
 }
 
 export default function SpellChoiceComponent({
@@ -11,14 +13,16 @@ export default function SpellChoiceComponent({
   selected,
   onUpdate,
 }: SpellChoiceComponentProps) {
+  const choiceSelections = useMemo(() => selected.filter(s => choice.choices.some(c => c.id === s.id)), [selected, choice]);
+
   function toggleSpell(spellId: string) {
     const spell = choice.choices.find(s => s.id === spellId);
     if (!spell) return;
     
-    if (selected.includes(spell.name)) {
-      onUpdate(selected.filter(name => name !== spell.name));
-    } else if (selected.length < choice.number) {
-      onUpdate([...selected, spell.name]);
+    if (selected.includes(spell)) {
+      onUpdate(selected.filter(s => s !== spell));
+    } else if (choiceSelections.length < choice.number) {
+      onUpdate([...selected, spell]);
     }
   }
 
@@ -34,8 +38,8 @@ export default function SpellChoiceComponent({
       </div>
       <div className="grid gap-2">
         {choice.choices.map((spell) => {
-          const isSelected = selected.includes(spell.name);
-          const isDisabled = !isSelected && selected.length >= choice.number;
+          const isSelected = selected.includes(spell);
+          const isDisabled = !isSelected && choiceSelections.length >= choice.number;
           
           return (
             <label
@@ -63,7 +67,7 @@ export default function SpellChoiceComponent({
         })}
       </div>
       <div className="mt-2 text-xs text-white/60">
-        Selected: {selected.length}/{choice.number}
+        Selected: {choiceSelections.length}/{choice.number}
       </div>
     </div>
   );

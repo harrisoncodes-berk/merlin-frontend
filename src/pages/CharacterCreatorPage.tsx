@@ -95,8 +95,8 @@ export default function CharacterCreatorPage() {
 
     if (selectedClass.spellChoices) {
       for (const spellChoice of selectedClass.spellChoices) {
-        const selectedSpells = draft.spells.filter(id =>
-          spellChoice.choices.some((s: any) => s.id === id)
+        const selectedSpells = draft.spells.filter(spell =>
+          spellChoice.choices.some((s: any) => s.id === spell.id)
         );
         if (selectedSpells.length !== spellChoice.number) {
           return false;
