@@ -87,10 +87,10 @@ export interface SpellSlots {
 }
 
 export interface Spellcasting {
-  className: string; // e.g., "Arcane Trickster"
   ability: AbilityKey; // spellcasting ability
-  slots?: Partial<Record<SpellLevel, SpellSlots>>;
   spells: Spell[]; // include cantrips with level = 0
+  slots?: Partial<Record<SpellLevel, SpellSlots>>;
+  className?: string; // e.g., "Arcane Trickster"
 }
 
 export type ComputedSkill = {

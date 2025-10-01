@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { listRaces, listClasses, listBackgrounds } from "@/api/characterCreatorApi";
+import { listRaces, listClasses, listBackgrounds, createCharacter } from "@/api/characterCreatorApi";
 import type { Race, Class, Background, CharacterDraft } from "@/models/character/creator";
 import ClassStep from "@/components/creator/steps/ClassStep";
 import RaceStep from "@/components/creator/steps/RaceStep";
@@ -168,6 +168,8 @@ export default function CharacterCreatorPage() {
     try {
       // TODO: Implement character creation API call
       console.log("Creating character with draft:", draft);
+      const createdCharacter = await createCharacter(draft);
+      console.log("Created character:", createdCharacter);
       nav("/");
     } catch (e: any) {
       setError(e?.message ?? "Failed to create character");
