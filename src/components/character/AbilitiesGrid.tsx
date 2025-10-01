@@ -1,4 +1,5 @@
 import type { AbilityScores } from "@/models/character/character";
+import { ABILITY_NAMES } from "@/models/character/common";
 
 export default function AbilitiesGrid({
   scores,
@@ -9,33 +10,24 @@ export default function AbilitiesGrid({
   mods: Record<keyof AbilityScores, number>;
   abbrv?: boolean;
 }) {
-  const items: Array<[keyof AbilityScores, string]> = [
-    ["str", "Strength"],
-    ["dex", "Dexterity"],
-    ["con", "Constitution"],
-    ["int", "Intelligence"],
-    ["wis", "Wisdom"],
-    ["cha", "Charisma"],
-  ];
-
   return (
     <section className="rounded-2xl border border-white/10 bg-slate-900/40 p-4">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white/70">
         Abilities
       </h3>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {items.map(([k, label]) => {
-          const score = scores[k];
+        {(Object.entries(ABILITY_NAMES) as [keyof AbilityScores, string][]).map(([key, label]) => {
+          const score = scores[key];
           if (score === 0) return null;
-          const mod = mods[k] ?? 0;
+          const mod = mods[key] ?? 0;
           const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
           return (
             <div
-              key={k}
+              key={key}
               className="rounded-xl bg-slate-800/70 p-3 ring-1 ring-white/10"
             >
               <div className="text-xs uppercase tracking-wide text-white/70">
-                {abbrv ? k : label}
+                {abbrv ? key : label}
               </div>
               <div className="mt-1 flex items-baseline gap-2">
                 <div className="text-2xl font-bold">{score}</div>
