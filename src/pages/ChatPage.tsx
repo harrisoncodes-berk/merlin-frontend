@@ -37,6 +37,8 @@ export default function ChatPage() {
         ? "…"
         : "—";
 
+  // TODO: Disable send button if awaiting response from Merlin
+
   return (
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">
       <CharacterSwitcher />

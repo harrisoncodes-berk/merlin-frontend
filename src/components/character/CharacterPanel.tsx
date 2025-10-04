@@ -98,7 +98,7 @@ export default function CharacterPanel({
                   <SpellsPanel
                     spells={character.spellcasting.spells}
                     slots={character.spellcasting.slots}
-                    castingClass={character.spellcasting.className}
+                    castingClass={character.spellcasting.className ?? ""}
                   />
                 ) : (
                   <p className="text-white/70">
