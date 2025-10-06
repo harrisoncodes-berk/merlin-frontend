@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { cancelTurn, getHistory, streamChat } from "@/api/chatApi";
 import type { Message } from "@/models/chat";
-
 
 type Options = {
   enabled?: boolean;
@@ -15,7 +15,7 @@ export function useChat(
 ) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [inflight, setInflight] = useState<string>("");
+  const [inflight, setInflight] = useState("");
 
   const abortRef = useRef<AbortController | null>(null);
   const inflightRef = useRef(inflight);
@@ -26,39 +26,35 @@ export function useChat(
   useEffect(() => {
     if (!enabled || !sessionId) return;
     let cancelled = false;
-
     (async () => {
       try {
         const res = await getHistory({ sessionId });
         if (cancelled) return;
-        setMessages(
-          res.messages.map((m) => ({
-            messageId: m.messageId,
-            role: m.role,
-            content: m.content,
-            createdAt: m.createdAt,
-          }))
-        );
+        setMessages(res.messages);
       } catch {
         if (!cancelled) setMessages([]);
       }
     })();
-
     return () => {
       cancelled = true;
     };
   }, [enabled, sessionId]);
 
+  // Reset/abort on scope change
   useEffect(() => {
     if (!resetOnScopeChange) return;
     setInflight("");
     setIsStreaming(false);
+    abortRef.current?.abort();
+    abortRef.current = null;
   }, [scopeKey, resetOnScopeChange]);
 
   const send = useCallback(
     async (text: string) => {
       if (!enabled || isStreaming) return;
-      setMessages((prev) => [...prev, { role: "user", content: text }]);
+      if (!sessionId) throw new Error("No sessionId");
+
+      setMessages((prev) => [...prev, { role: "user", content: text } as Message]);
       setInflight("");
       setIsStreaming(true);
 
@@ -67,21 +63,34 @@ export function useChat(
       abortRef.current = ac;
 
       try {
-        if (!sessionId) throw new Error("No sessionId");
-        for await (const ev of streamChat(sessionId, text, {
-          signal: ac.signal,
-          clientMessageId: crypto.randomUUID(),
-        })) {
-          if (ev.event === "token" && ev.data?.text) setInflight((s) => s + ev.data.text);
-          else if (ev.event === "done") break;
-          else if (ev.event === "error") throw new Error(ev.data?.message || "Stream error");
+        for await (const ev of streamChat(sessionId, text, { signal: ac.signal })) {
+          if (ev.event === "token") {
+            setInflight((s) => s + (ev.data?.text ?? ""));
+          } else if (ev.event === "error") {
+            throw new Error(ev.data?.message || "Stream error");
+          } else if (ev.event === "done") {
+            break;
+          }
         }
-        setMessages((prev) => [...prev, { role: "assistant", content: inflightRef.current ?? "" }]);
+
+        const assistantContent = inflightRef.current ?? "";
+        if (assistantContent.trim()) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: assistantContent } as Message,
+          ]);
+        }
         setInflight("");
       } catch {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "Something went wrong." } as Message,
+        ]);
         setInflight("");
       } finally {
-        if (abortRef.current === ac) setIsStreaming(false);
+        if (abortRef.current === ac) {
+          setIsStreaming(false);
+        }
       }
     },
     [enabled, isStreaming, sessionId]
@@ -99,14 +108,13 @@ export function useChat(
 
   const canAbort = isStreaming;
 
-  return {
-    messages: useMemo(
-      () => (inflight ? [...messages, { role: "assistant", content: inflight } as Message] : messages),
-      [messages, inflight]
-    ),
-    isStreaming,
-    send,
-    stop,
-    canAbort,
-  };
+  const visibleMessages = useMemo(
+    () =>
+      inflight
+        ? [...messages, { role: "assistant", content: inflight } as Message]
+        : messages,
+    [messages, inflight]
+  );
+
+  return { messages: visibleMessages, isStreaming, send, stop, canAbort };
 }

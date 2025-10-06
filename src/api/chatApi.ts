@@ -1,5 +1,9 @@
 import { fetchJSON, streamNDJSON } from "@/api/client";
-import type { HistoryResponse, Session } from "@/models/chat";
+import type {
+  HistoryResponse,
+  Session,
+  StreamServerEvent,
+} from "@/models/chat";
 
 export function getSession({ sessionId }: { sessionId: string }) {
   return fetchJSON<Session>(`/chat/sessions/${sessionId}`, {
@@ -44,18 +48,22 @@ export async function* streamChat(
   sessionId: string,
   userText: string,
   opts?: { signal?: AbortSignal; clientMessageId?: string }
-): AsyncIterable<{ event: string; data?: any }> {
-  yield* streamNDJSON<{ event: string; data?: any }>(
-    `/chat/sessions/${sessionId}/stream`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: { message: userText, clientMessageId: opts?.clientMessageId ?? crypto.randomUUID() },
-      requireAuth: true,
-      retry401Once: true,
-      signal: opts?.signal,
-    }
-  );
+): AsyncIterable<StreamServerEvent> {
+  const it = streamNDJSON<StreamServerEvent>(`/chat/sessions/${sessionId}/stream`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: {
+      message: userText,
+      clientMessageId: opts?.clientMessageId,
+    },
+    requireAuth: true,
+    retry401Once: true,
+    signal: opts?.signal,
+  });
+
+  for await (const ev of it) {
+    yield ev;
+  }
 }
 
 export function cancelTurn(sessionId: string) {

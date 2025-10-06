@@ -9,11 +9,10 @@ export default function MessageList({
   messages: Message[];
   isStreaming?: boolean;
 }) {
-  const { containerRef, endRef, onScroll, pinned, scrollToBottom } =
-    useAutoscroll({
-      itemCount: messages.length + (isStreaming ? 1 : 0),
-      isStreaming,
-    });
+  const { containerRef, endRef, onScroll, pinned, scrollToBottom } = useAutoscroll({
+    itemCount: messages.length + (isStreaming ? 1 : 0),
+    isStreaming,
+  });
 
   return (
     <div
@@ -21,7 +20,6 @@ export default function MessageList({
       onScroll={onScroll}
       className="relative mt-3 grid max-h-[calc(100dvh-12rem)] grid-rows-[1fr] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/40 p-3 sm:p-4"
     >
-      {/* “Jump to latest” pill when user has scrolled up */}
       {!pinned && (
         <button
           onClick={scrollToBottom}
@@ -32,8 +30,8 @@ export default function MessageList({
       )}
 
       <ul className="space-y-3">
-        {messages.map((m) => (
-          <MessageItem key={m.messageId} msg={m} />
+        {messages.map((m, i) => (
+          <MessageItem key={m.messageId ?? i} msg={m} />
         ))}
         {isStreaming && (
           <li className="mr-auto max-w-[72ch] rounded-2xl bg-slate-700 px-4 py-2 text-slate-100">
@@ -44,7 +42,6 @@ export default function MessageList({
             </span>
           </li>
         )}
-        {/* Sentinel for smooth scrolling */}
         <li ref={endRef} aria-hidden />
       </ul>
     </div>

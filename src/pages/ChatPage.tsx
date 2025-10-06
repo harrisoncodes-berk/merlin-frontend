@@ -1,3 +1,4 @@
+// src/pages/ChatPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -11,8 +12,7 @@ import { getSession } from "@/api/chatApi";
 import { useCharacterContext } from "@/contexts/CharacterProvider";
 import { useChat } from "@/hooks/useChat";
 import type { Session } from "@/models/chat";
-
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import { UUID_RE } from "@/models/chat";
 
 export default function ChatPage() {
   const [showChar, setShowChar] = useState(false);
@@ -31,8 +31,9 @@ export default function ChatPage() {
   useEffect(() => {
     let cancelled = false;
     if (!sessionId || !UUID_RE.test(sessionId)) return;
-    setMetaLoading(true);
+
     (async () => {
+      setMetaLoading(true);
       try {
         const m = await getSession({ sessionId });
         if (!cancelled) setMeta(m);
@@ -42,6 +43,7 @@ export default function ChatPage() {
         if (!cancelled) setMetaLoading(false);
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -66,8 +68,9 @@ export default function ChatPage() {
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">
       <CharacterSwitcher />
       <LogoutButton />
+
       <header className="mx-auto flex w-full max-w-3xl items-center gap-2 border-b border-white/10 px-2 pb-3">
-        <div className="h-7 w-7 rounded-lg bg-indigo-600" />
+        <div className="h-7 w-7 rounded-lg bg-indigo-600" aria-hidden />
         <div className="text-sm">
           <div className="font-semibold">{meta?.title ?? "Merlin"}</div>
           <div className="text-xs text-white/70">{meta ? "Chat Session" : "Loading session…"}</div>
@@ -95,7 +98,13 @@ export default function ChatPage() {
       </main>
 
       <footer className="mx-auto w-full max-w-3xl">
-        <Composer key={scopeKey} onSend={(text) => send(text)} canAbort={canAbort} onStop={stop} disabled={composerDisabled} />
+        <Composer
+          key={scopeKey}
+          onSend={send}
+          canAbort={canAbort}
+          onStop={stop}
+          disabled={composerDisabled}
+        />
       </footer>
 
       <CharacterPanel open={showChar} onClose={() => setShowChar(false)} />
@@ -111,4 +120,3 @@ function MiniStat({ label, value }: { label: string; value: string }) {
     </span>
   );
 }
-
