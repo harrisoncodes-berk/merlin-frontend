@@ -67,13 +67,12 @@ export default function CharacterSelectPage() {
               key={c.id}
               onClick={async () => {
                 await selectCharacter(c.id);
-                navigate("/");
+                navigate("/chat");
               }}
-              className={`rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-left shadow hover:border-slate-700 hover:bg-slate-900 ${
-                character?.id === c.id
+              className={`rounded-2xl border border-slate-800 bg-slate-900/60 p-4 text-left shadow hover:border-slate-700 hover:bg-slate-900 ${character?.id === c.id
                   ? "ring-2 ring-emerald-500/60"
                   : ""
-              }`}
+                }`}
             >
               <div className="mb-2 flex items-center justify-between">
                 <div className="text-base font-semibold">{c.name}</div>

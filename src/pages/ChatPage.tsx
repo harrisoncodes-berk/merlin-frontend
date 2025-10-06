@@ -1,43 +1,66 @@
-import MessageList from "@/components/chat/MessageList";
-import Composer from "@/components/chat/Composer";
-import { useChat } from "@/hooks/useChat";
-import { useState } from "react";
-import CharacterPanel from "@/components/character/CharacterPanel";
-import { useCharacterContext } from "@/contexts/CharacterProvider";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
 import LogoutButton from "@/components/auth/LogoutButton";
+import CharacterPanel from "@/components/character/CharacterPanel";
 import CharacterSwitcher from "@/components/character/CharacterSwitcher";
+import Composer from "@/components/chat/Composer";
+import MessageList from "@/components/chat/MessageList";
+
+import { getSession } from "@/api/chatApi";
+import { useCharacterContext } from "@/contexts/CharacterProvider";
+import { useChat } from "@/hooks/useChat";
+import type { Session } from "@/models/chat";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export default function ChatPage() {
   const [showChar, setShowChar] = useState(false);
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const navigate = useNavigate();
 
-  const {
-    character,
-    isLoading: charLoading,
-    error: charError,
-  } = useCharacterContext();
+  useEffect(() => {
+    if (!sessionId || !UUID_RE.test(sessionId)) {
+      navigate("/chat", { replace: true });
+    }
+  }, [sessionId, navigate]);
 
-  const scopeKey = character?.id ?? "no-character";
+  const [meta, setMeta] = useState<Session | null>(null);
+  const [metaLoading, setMetaLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!sessionId || !UUID_RE.test(sessionId)) return;
+    setMetaLoading(true);
+    (async () => {
+      try {
+        const m = await getSession({ sessionId });
+        if (!cancelled) setMeta(m);
+      } catch {
+        if (!cancelled) navigate("/chat", { replace: true });
+      } finally {
+        if (!cancelled) setMetaLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId, navigate]);
+
+  const { character, isLoading: charLoading, error: charError } = useCharacterContext();
+
+  const scopeKey = meta?.sessionId ?? "no-session";
+  const streamingEnabled = !!meta && !meta.archivedAt;
+
   const { messages, isStreaming, send, stop, canAbort } = useChat(scopeKey, {
     resetOnScopeChange: true,
+    enabled: streamingEnabled,
+    sessionId: meta?.sessionId,
   });
 
-  const hpText = charError
-    ? "Err"
-    : character
-      ? `${character.hpCurrent}/${character.hpMax}`
-      : charLoading
-        ? "…"
-        : "—";
-
-  const acText = charError
-    ? "Err"
-    : character
-      ? String(character.ac)
-      : charLoading
-        ? "…"
-        : "—";
-
-  // TODO: Disable send button if awaiting response from Merlin
+  const hpText = charError ? "Err" : charLoading ? "…" : character ? `${character.hpCurrent}/${character.hpMax}` : "—";
+  const acText = charError ? "Err" : charLoading ? "…" : character ? String(character.ac) : "—";
+  const composerDisabled = !streamingEnabled || isStreaming;
 
   return (
     <div className="min-h-dvh grid grid-rows-[auto,1fr,auto] bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-4 text-white">
@@ -46,8 +69,8 @@ export default function ChatPage() {
       <header className="mx-auto flex w-full max-w-3xl items-center gap-2 border-b border-white/10 px-2 pb-3">
         <div className="h-7 w-7 rounded-lg bg-indigo-600" />
         <div className="text-sm">
-          <div className="font-semibold">Merlin</div>
-          <div className="text-xs text-white/70">Chat MVP · Step 1</div>
+          <div className="font-semibold">{meta?.title ?? "Merlin"}</div>
+          <div className="text-xs text-white/70">{meta ? "Chat Session" : "Loading session…"}</div>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <MiniStat label="HP" value={hpText} />
@@ -61,12 +84,18 @@ export default function ChatPage() {
         </div>
       </header>
 
+      {meta?.archivedAt && (
+        <div className="mx-auto my-2 w-full max-w-3xl rounded-md bg-amber-900/40 px-3 py-2 text-sm">
+          This adventure is archived. You can view history but cannot send new messages.
+        </div>
+      )}
+
       <main className="mx-auto w-full max-w-3xl">
-        <MessageList messages={messages} isStreaming={isStreaming} />
+        {!metaLoading && meta && <MessageList messages={messages} isStreaming={isStreaming} />}
       </main>
 
       <footer className="mx-auto w-full max-w-3xl">
-        <Composer key={scopeKey} onSend={send} canAbort={canAbort} onStop={stop} />
+        <Composer key={scopeKey} onSend={(text) => send(text)} canAbort={canAbort} onStop={stop} disabled={composerDisabled} />
       </footer>
 
       <CharacterPanel open={showChar} onClose={() => setShowChar(false)} />
@@ -82,3 +111,4 @@ function MiniStat({ label, value }: { label: string; value: string }) {
     </span>
   );
 }
+

@@ -167,7 +167,6 @@ export default function CharacterCreatorPage() {
     setError(null);
     try {
       // TODO: Implement character creation API call
-      console.log("Creating character with draft:", draft);
       const createdCharacter = await createCharacter(draft);
       console.log("Created character:", createdCharacter);
       nav("/");

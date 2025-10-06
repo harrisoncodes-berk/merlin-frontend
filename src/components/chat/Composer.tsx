@@ -4,10 +4,12 @@ export default function Composer({
   onSend,
   canAbort,
   onStop,
+  disabled = false,
 }: {
   onSend: (text: string) => void;
   canAbort?: boolean;
   onStop?: () => void;
+  disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
   const [rows, setRows] = useState(1);
@@ -24,13 +26,18 @@ export default function Composer({
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
+      if (disabled || canAbort) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       submit();
     }
   }
+
   function submit() {
     const text = value.trim();
-    if (!text) return;
+    if (!text || disabled || canAbort) return;
     onSend(text);
     setValue("");
   }
@@ -58,16 +65,20 @@ export default function Composer({
         ) : (
           <button
             onClick={submit}
-            className="mb-1 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            disabled={disabled}
+            aria-disabled={disabled}
+            title={disabled ? "Wait for the reply to finish" : undefined}
+            className={`mb-1 rounded-lg px-3 py-2 text-sm font-semibold text-white focus:outline-none focus:ring-2 ${disabled
+                ? "bg-indigo-600/40 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-500 focus:ring-indigo-300"
+              }`}
           >
             Send
           </button>
         )}
       </div>
       <div className="mt-1 flex items-center justify-between px-2">
-        <span className="text-xs text-slate-400">
-          Enter to send · Shift+Enter for newline
-        </span>
+        <span className="text-xs text-slate-400">Enter to send · Shift+Enter for newline</span>
       </div>
     </div>
   );

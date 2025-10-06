@@ -1,21 +1,67 @@
-import type { StreamEvent } from "@/models/chat";
+import { fetchJSON, streamNDJSON } from "@/api/client";
+import type { HistoryResponse, Session } from "@/models/chat";
 
-// Mock streaming API so the UI works before you wire the backend.
-const demoReply = (you: string) =>
-  `You whisper: "${you}". A lantern sways over the docks; the lock is old brass—scored, stubborn. What do you do next?`;
+export function getSession({ sessionId }: { sessionId: string }) {
+  return fetchJSON<Session>(`/chat/sessions/${sessionId}`, {
+    requireAuth: true,
+    retry401Once: true,
+  });
+}
 
-export function chatStream(
+export function getOrCreateActiveSession({ characterId }: { characterId: string }) {
+  return fetchJSON<Session>("/chat/sessions/active", {
+    method: "POST",
+    body: { characterId },
+    requireAuth: true,
+    retry401Once: true,
+  });
+}
+
+export function getHistory({
+  sessionId,
+  after,
+  limit = 50,
+}: {
+  sessionId: string;
+  after?: number;
+  limit?: number;
+}) {
+  const qs = new URLSearchParams();
+  if (after != null) qs.set("after", String(after));
+  if (limit) qs.set("limit", String(limit));
+  const path =
+    qs.toString().length > 0
+      ? `/chat/sessions/${sessionId}/history?${qs.toString()}`
+      : `/chat/sessions/${sessionId}/history`;
+
+  return fetchJSON<HistoryResponse>(path, {
+    requireAuth: true,
+    retry401Once: true,
+  });
+}
+
+export async function* streamChat(
+  sessionId: string,
   userText: string,
-  _opts?: { signal?: AbortSignal },
-): AsyncIterable<StreamEvent> {
-  async function* gen() {
-    const text = demoReply(userText);
-    const chunks = text.split(/(\s+)/); // keep spaces for smoother streaming
-    for (const c of chunks) {
-      await new Promise((r) => setTimeout(r, 25));
-      yield { type: "delta", content: c } as const;
+  opts?: { signal?: AbortSignal; clientMessageId?: string }
+): AsyncIterable<{ event: string; data?: any }> {
+  yield* streamNDJSON<{ event: string; data?: any }>(
+    `/chat/sessions/${sessionId}/stream`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: { message: userText, clientMessageId: opts?.clientMessageId ?? crypto.randomUUID() },
+      requireAuth: true,
+      retry401Once: true,
+      signal: opts?.signal,
     }
-    yield { type: "final" } as const;
-  }
-  return gen();
+  );
+}
+
+export function cancelTurn(sessionId: string) {
+  return fetchJSON<void>(`/chat/sessions/${sessionId}/jobs/current`, {
+    method: "DELETE",
+    requireAuth: true,
+    retry401Once: true,
+  });
 }

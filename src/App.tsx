@@ -6,6 +6,7 @@ import HomePage from "@/pages/HomePage";
 import ChatPage from "@/pages/ChatPage";
 import CharacterSelectPage from "@/pages/CharacterSelectPage";
 import CharacterCreatorPage from "@/pages/CharacterCreatorPage";
+import SessionGate from "@/routes/SessionGate";
 
 export default function App() {
   return (
@@ -15,7 +16,8 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<ProtectedAppLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="chat" element={<ChatPage />} />
+          <Route path="chat" element={<SessionGate />} />
+          <Route path="chat/:sessionId" element={<ChatPage />} />
           <Route path="characters" element={<CharacterSelectPage />} />
           <Route path="create" element={<CharacterCreatorPage />} />
         </Route>
