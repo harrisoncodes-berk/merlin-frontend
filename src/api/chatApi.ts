@@ -1,6 +1,7 @@
 import { fetchJSON, streamNDJSON } from "@/api/client";
 import type {
   HistoryResponse,
+  Message,
   Session,
   StreamServerEvent,
 } from "@/models/chat";
@@ -39,6 +40,19 @@ export function getHistory({
       : `/chat/sessions/${sessionId}/history`;
 
   return fetchJSON<HistoryResponse>(path, {
+    requireAuth: true,
+    retry401Once: true,
+  });
+}
+
+export async function sendMessage(
+  sessionId: string,
+  userText: string
+): Promise<Message> {
+  return fetchJSON<Message>(`/chat/sessions/${sessionId}/message`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: { message: userText },
     requireAuth: true,
     retry401Once: true,
   });

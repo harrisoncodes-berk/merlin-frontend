@@ -31,7 +31,7 @@ export default function MessageList({
 
       <ul className="space-y-3">
         {messages.map((m, i) => (
-          <MessageItem key={m.messageId ?? i} msg={m} />
+          <MessageItem key={m.messageId ?? i*1000} msg={m} />
         ))}
         {isStreaming && (
           <li className="mr-auto max-w-[72ch] rounded-2xl bg-slate-700 px-4 py-2 text-slate-100">

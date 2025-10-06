@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-import { cancelTurn, getHistory, streamChat } from "@/api/chatApi";
+// src/hooks/useChat.ts
+import { useCallback, useEffect, useState } from "react";
+import { getHistory, sendMessage } from "@/api/chatApi";
 import type { Message } from "@/models/chat";
 
 type Options = {
@@ -15,13 +15,6 @@ export function useChat(
 ) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [inflight, setInflight] = useState("");
-
-  const abortRef = useRef<AbortController | null>(null);
-  const inflightRef = useRef(inflight);
-  useEffect(() => {
-    inflightRef.current = inflight;
-  }, [inflight]);
 
   useEffect(() => {
     if (!enabled || !sessionId) return;
@@ -29,8 +22,7 @@ export function useChat(
     (async () => {
       try {
         const res = await getHistory({ sessionId });
-        if (cancelled) return;
-        setMessages(res.messages);
+        if (!cancelled) setMessages(res.messages);
       } catch {
         if (!cancelled) setMessages([]);
       }
@@ -40,13 +32,9 @@ export function useChat(
     };
   }, [enabled, sessionId]);
 
-  // Reset/abort on scope change
   useEffect(() => {
     if (!resetOnScopeChange) return;
-    setInflight("");
     setIsStreaming(false);
-    abortRef.current?.abort();
-    abortRef.current = null;
   }, [scopeKey, resetOnScopeChange]);
 
   const send = useCallback(
@@ -55,66 +43,26 @@ export function useChat(
       if (!sessionId) throw new Error("No sessionId");
 
       setMessages((prev) => [...prev, { role: "user", content: text } as Message]);
-      setInflight("");
       setIsStreaming(true);
 
-      abortRef.current?.abort();
-      const ac = new AbortController();
-      abortRef.current = ac;
-
       try {
-        for await (const ev of streamChat(sessionId, text, { signal: ac.signal })) {
-          if (ev.event === "token") {
-            setInflight((s) => s + (ev.data?.text ?? ""));
-          } else if (ev.event === "error") {
-            throw new Error(ev.data?.message || "Stream error");
-          } else if (ev.event === "done") {
-            break;
-          }
-        }
+        const assistant = await sendMessage(sessionId, text);
 
-        const assistantContent = inflightRef.current ?? "";
-        if (assistantContent.trim()) {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: assistantContent } as Message,
-          ]);
-        }
-        setInflight("");
+        setMessages((prev) => [...prev, { ...assistant } as Message]);
       } catch {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "Something went wrong." } as Message,
+          { role: "system", content: "Something went wrong." } as Message,
         ]);
-        setInflight("");
       } finally {
-        if (abortRef.current === ac) {
-          setIsStreaming(false);
-        }
+        setIsStreaming(false);
       }
     },
     [enabled, isStreaming, sessionId]
   );
 
-  const stop = useCallback(async () => {
-    if (!isStreaming) return;
-    abortRef.current?.abort();
-    if (sessionId) {
-      try {
-        await cancelTurn(sessionId);
-      } catch { }
-    }
-  }, [isStreaming, sessionId]);
+  const stop = useCallback(() => { }, []);
+  const canAbort = false;
 
-  const canAbort = isStreaming;
-
-  const visibleMessages = useMemo(
-    () =>
-      inflight
-        ? [...messages, { role: "assistant", content: inflight } as Message]
-        : messages,
-    [messages, inflight]
-  );
-
-  return { messages: visibleMessages, isStreaming, send, stop, canAbort };
+  return { messages, isStreaming, send, stop, canAbort };
 }
