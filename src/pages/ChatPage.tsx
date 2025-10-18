@@ -1,4 +1,3 @@
-// src/pages/ChatPage.tsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -21,7 +20,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (!sessionId || !UUID_RE.test(sessionId)) {
-      navigate("/chat", { replace: true });
+      navigate("/characters", { replace: true });
     }
   }, [sessionId, navigate]);
 
@@ -38,7 +37,7 @@ export default function ChatPage() {
         const m = await getSession({ sessionId });
         if (!cancelled) setMeta(m);
       } catch {
-        if (!cancelled) navigate("/chat", { replace: true });
+        if (!cancelled) navigate("/characters", { replace: true });
       } finally {
         if (!cancelled) setMetaLoading(false);
       }
@@ -72,7 +71,7 @@ export default function ChatPage() {
       <header className="mx-auto flex w-full max-w-3xl items-center gap-2 border-b border-white/10 px-2 pb-3">
         <div className="h-7 w-7 rounded-lg bg-indigo-600" aria-hidden />
         <div className="text-sm">
-          <div className="font-semibold">{meta?.title ?? "Merlin"}</div>
+          <div className="font-semibold">{meta?.adventureTitle ?? "Merlin"}</div>
           <div className="text-xs text-white/70">{meta ? "Chat Session" : "Loading session…"}</div>
         </div>
         <div className="ml-auto flex items-center gap-2">

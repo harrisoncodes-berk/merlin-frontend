@@ -6,11 +6,7 @@ export const UUID_RE =
 
 export type Session = {
   sessionId: string;
-  characterId: string;
-  title: string;
-  settings: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
+  adventureTitle: string;
   archivedAt: string | null;
 };
 
