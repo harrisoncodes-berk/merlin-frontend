@@ -20,7 +20,7 @@ export type InventoryItem = {
 export type Feature = {
   id: string;
   name: string;
-  summary?: string;
+  description?: string;
   uses?: number;
   maxUses?: number;
 };

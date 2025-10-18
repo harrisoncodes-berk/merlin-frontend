@@ -16,12 +16,12 @@ export default function FeaturesList({ features }: { features: Feature[] }) {
               <div className="font-semibold">{f.name}</div>
               {f.maxUses != null && (
                 <span className="text-xs text-white/70">
-                  {f.uses ?? 0}/{f.maxUses}
+                  Daily Uses: {f.uses ?? 0}/{f.maxUses}
                 </span>
               )}
             </div>
-            {f.summary && (
-              <p className="mt-1 text-sm text-white/80">{f.summary}</p>
+            {f.description && (
+              <p className="mt-1 text-sm text-white/80">{f.description}</p>
             )}
           </li>
         ))}
