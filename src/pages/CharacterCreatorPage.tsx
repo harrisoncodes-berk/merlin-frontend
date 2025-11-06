@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { listRaces, listClasses, listBackgrounds, createCharacter } from "@/api/characterCreatorApi";
 import type { Race, Class, Background, CharacterDraft } from "@/models/character/creator";
 import ClassStep from "@/components/creator/steps/ClassStep";
 import RaceStep from "@/components/creator/steps/RaceStep";
@@ -9,6 +8,8 @@ import AbilityStep from "@/components/creator/steps/AbilityStep";
 import ClassChoicesStep from "@/components/creator/steps/ClassChoicesStep";
 import SummaryStep from "@/components/creator/steps/SummaryStep";
 import SummaryCard from "@/components/creator/SummaryCard";
+import { useBackgroundsQuery, useClassesQuery, useRacesQuery } from "@/hooks/queries/creator";
+import { useCreateCharacterMutation } from "@/hooks/queries/character";
 
 type Step = "class" | "race" | "background" | "abilities" | "choices" | "summary";
 
@@ -18,10 +19,13 @@ export default function CharacterCreatorPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Data
-  const [races, setRaces] = useState<Race[]>([]);
-  const [classes, setClasses] = useState<Class[]>([]);
-  const [backgrounds, setBackgrounds] = useState<Background[]>([]);
+  // Data via queries
+  const racesQ = useRacesQuery();
+  const classesQ = useClassesQuery();
+  const backgroundsQ = useBackgroundsQuery();
+  const races = (racesQ.data ?? []) as Race[];
+  const classes = (classesQ.data ?? []) as Class[];
+  const backgrounds = (backgroundsQ.data ?? []) as Background[];
 
   // Form state
   const [draft, setDraft] = useState<CharacterDraft>({
@@ -42,29 +46,17 @@ export default function CharacterCreatorPage() {
     },
   });
 
-  // Load initial data
+  // Surface initial data load errors from queries
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const [racesData, classesData, backgroundsData] = await Promise.all([
-          listRaces(),
-          listClasses(),
-          listBackgrounds(),
-        ]);
-        if (!mounted) return;
-        setRaces(racesData);
-        setClasses(classesData);
-        setBackgrounds(backgroundsData);
-      } catch (e: any) {
-        if (!mounted) return;
-        setError(e?.message ?? "Failed to load character data");
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    if (racesQ.error || classesQ.error || backgroundsQ.error) {
+      const msg =
+        (racesQ.error as any)?.message ||
+        (classesQ.error as any)?.message ||
+        (backgroundsQ.error as any)?.message ||
+        "Failed to load character data";
+      setError(msg);
+    }
+  }, [racesQ.error, classesQ.error, backgroundsQ.error]);
 
   const selectedClass = useMemo(() => classes.find((c) => c.id === draft.classId) ?? null, [classes, draft.classId]);
   const selectedRace = useMemo(() => races.find((r) => r.id === draft.raceId) ?? null, [races, draft.raceId]);
@@ -162,14 +154,14 @@ export default function CharacterCreatorPage() {
     }
   }
 
+  const createMutation = useCreateCharacterMutation();
+
   async function handleCreate() {
     setBusy(true);
     setError(null);
     try {
-      // TODO: Implement character creation API call
-      const createdCharacter = await createCharacter(draft);
-      console.log("Created character:", createdCharacter);
-      nav("/");
+      await createMutation.mutateAsync(draft);
+      nav("/characters");
     } catch (e: any) {
       setError(e?.message ?? "Failed to create character");
     } finally {

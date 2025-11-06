@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Character } from "@/models/character/character";
-import { listCharacters, getCharacterById } from "@/api/characterApi";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useCharacterQuery, useCharactersQuery } from "@/hooks/queries/character";
 
 type CharacterContextValue = {
   character: Character | null;
@@ -16,68 +16,38 @@ const CharacterContext = createContext<CharacterContextValue | null>(null);
 export function CharacterProvider({ children }: { children: React.ReactNode }) {
   const { user, isLoading: authLoading } = useAuth();
 
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  const {
+    data: characters = [],
+    isLoading: charactersLoading,
+    error: charactersError,
+  } = useCharactersQuery(!!user && !authLoading);
+
+  // Choose initial character when list loads
   useEffect(() => {
-    let mounted = true;
-
-    if (authLoading) return;
-
-    if (!user) {
-      setCharacters([]);
-      setCharacter(null);
-      setIsLoading(false);
-      setError(null);
-      return;
+    if (!charactersLoading && characters.length && !selectedId) {
+      setSelectedId(characters[0].id);
     }
-
-    (async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const all = await listCharacters();
-        if (!mounted) return;
-        setCharacters(all);
-
-        if (!all.length) {
-          setCharacter(null);
-          setError("No characters available.");
-          return;
-        }
-
-        const initialId = all[0].id;
-        const active = await getCharacterById(initialId);
-        if (!mounted) return;
-        setCharacter(active ?? all[0]);
-      } catch (e: any) {
-        if (!mounted) return;
-        setError(e?.message ?? "Failed to load characters.");
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [user?.id, authLoading]);
-
-  async function selectCharacter(id: string) {
-    if (!user?.id) return;
-    setIsLoading(true);
-    try {
-      const active = await getCharacterById(id);
-      setCharacter(active);
-    } finally {
-      setIsLoading(false);
+    if (!charactersLoading && characters.length === 0) {
+      setSelectedId(null);
     }
+  }, [charactersLoading, characters, selectedId]);
+
+  const {
+    data: character,
+    isLoading: characterLoading,
+  } = useCharacterQuery(selectedId, !!user && !authLoading);
+
+  function selectCharacter(id: string) {
+    setSelectedId(id);
   }
 
+  const isLoading = authLoading || charactersLoading || (!!selectedId && characterLoading);
+  const error = charactersError ? (charactersError as any)?.message ?? "Failed to load characters." : null;
+
   const value = useMemo(
-    () => ({ character, characters, isLoading, error, selectCharacter }),
+    () => ({ character: character ?? null, characters, isLoading, error, selectCharacter }),
     [character, characters, isLoading, error]
   );
 
